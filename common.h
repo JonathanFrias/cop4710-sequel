@@ -1,3 +1,9 @@
+#include <stdlib.h>
+#include <stdio.h>
+
+#define PARSETREE_SIZE sizeof(struct ParseTree)
+#define FIELD_SIZE sizeof(struct Field)
+
 struct Field {
   char* name;
   void* value;
@@ -43,6 +49,7 @@ struct ParseTree {
   struct Field* updateFields;
   struct Field* insertFields;
 };
+
 
 struct ParseTree* parseGrammer(char* sql);
 
