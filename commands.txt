@@ -1,0 +1,31 @@
+System level:
+
+CREATE DATABASE database-name;
+DROP DATABASE database-name;
+COMMIT; or
+SAVE;
+LOAD DATABASE database-name;
+
+
+DDL:
+
+CREATE TABLE table-name (field-def [, field-def] ... );
+	where field-def in turn has the form
+	field-name field-type [NOT NULL]
+	field-type: integer[(n)], number[(w[, d])], character(n), date (mm/dd/[yy]yy)
+DROP TABLE table-name;
+
+
+DML:
+
+INSERT INTO table [( field [,field]...)] VALUES (literal [, literal ] ...);
+DELETE FROM table [WHERE condition];
+UPDATE table_name SET field_name = expression [[, field_name = expression]...]
+	[WHERE condition];
+wUPDATE table_name SET [date (mm/dd/[yy]yy):Time] field_name = expression [[,[date
+	(mm/dd/[yy]yy):Time] field_name = expression]...]
+	[WHERE condition];
+SELECT * FROM table;
+wSELECT * FROM table;
+wSelect [* | ( field [,field]...)] FROM table
+	[WHERE condition];
