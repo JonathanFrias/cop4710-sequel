@@ -56,4 +56,3 @@ void example1(void) {
   free(p->fields);
   free(p);
 }
-
