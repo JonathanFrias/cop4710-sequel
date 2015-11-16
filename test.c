@@ -20,6 +20,7 @@ struct Tuple* retrieve(struct ParseTree tree) {
 void testParseGrammer(void) {
   struct ParseTree* parseTree = parseGrammer("SELECT id from table1");
 
+  assert(parseTree != 0, "Should not be a NULL pointer!");
   assert(parseTree->commandType == SELECT, "Command type should equal select!");
   assert(strcmp("table1", parseTree->table) == 0, "The table was not set propertly!");
   assert(parseTree->whereConstraints != NULL, "WhereConstraints should have been specified!");
