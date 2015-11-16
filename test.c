@@ -1,18 +1,19 @@
 #include "common.h"
+#include "assert.h"
 
 void example1(void);
 void testStore(void);
 void testRetrieve(void);
 void testParseGrammer(void);
-void assert(bool value, char* errorMsg);
-
 
 struct ParseTree* parseGrammer(char* sql) {
   return NULL;
 }
+
 void store(struct Tuple* tuples, int count) {
   return;
 }
+
 struct Tuple* retrieve(struct ParseTree tree) {
   return NULL;
 }
@@ -20,6 +21,7 @@ struct Tuple* retrieve(struct ParseTree tree) {
 void testParseGrammer(void) {
   struct ParseTree* parseTree = parseGrammer("SELECT id from table1");
 
+  assert(parseTree != 0, "Should not contain a null pointer!");
   assert(parseTree->commandType == SELECT, "Command type should equal select!");
   assert(strcmp("table1", parseTree->table) == 0, "The table was not set propertly!");
   assert(parseTree->whereConstraints != NULL, "WhereConstraints should have been specified!");
@@ -32,14 +34,6 @@ void testStore(void) {
 }
 
 void testRetrieve(void) {
-
-}
-
-void assert(bool val, char* msg) {
-  if(!val) {
-    printf("assertion failed: %s\n", msg);
-    exit(1);
-  }
 }
 
 int main(void) {
@@ -61,5 +55,5 @@ void example1(void) {
   // cleanup
   free(p->fields);
   free(p);
-
 }
+
