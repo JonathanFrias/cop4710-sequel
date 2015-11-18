@@ -1,9 +1,16 @@
-# Make file variable
+# output directory
 COMPILE_DIR := out
 
-SRC := $(wildcard *.c)
+# this is a variable that represents source files
+# File starting with 'test' are excluded from
+# this list.
+SRC := $(wildcard *[^test*].c)
+
+# compile the entire codebase.
+all: $(SRC)
+	mkdir -p $(COMPILE_DIR) #=> mkdir -p out
+	cc $(SRC) -g -std=gnu99 -o $(COMPILE_DIR)/sql #=> cc test.c -std=gnu99 -o out/test
 
 # Run this with 'make test', then './out/test'
-test: test.c
-	mkdir -p $(COMPILE_DIR) #=> mkdir -p out
-	cc $(SRC) -g -std=gnu99 -o $(COMPILE_DIR)/test #=> cc test.c -std=gnu99 -o out/test
+test:
+	cc test.c -g -std=gnu99 -o $(COMPILE_DIR)/test
