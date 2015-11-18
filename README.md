@@ -67,5 +67,3 @@ to a minimum.
 - There is tooling for using git. If you are not familiar I recommend
   [Github for Windows] (https://desktop.github.com/) or [Github for Mac]
 (https://desktop.github.com/)
-
-test 
