@@ -59,14 +59,14 @@ void exampleTable(void) {
 
 
   // Allocate space in memory for a known amount of tuples.
-  struct Tuple* tuple = (struct Tuple*) malloc(sizeof(struct Tuple)*count);
+  struct Tuple* tuples = (struct Tuple*) malloc(sizeof(struct Tuple)*count);
 
   for(int i = 0; i < count; i++) {
     // Create a Field* that represents the primary key
     struct Field* primaryKeyField = (struct Field*) malloc(sizeof(struct Field));
 
-    tuple[i].fields = primaryKeyField;
-    tuple[i].primaryKey = primaryKeyField;
+    tuples[i].fields = primaryKeyField;
+    tuples[i].primaryKey = primaryKeyField;
 
     char* name = malloc(sizeof(char)*12);
     char* value = malloc(sizeof(char)*12);
@@ -76,16 +76,16 @@ void exampleTable(void) {
     sprintf(name, "name%d", i);
     sprintf(value, "value%d", i);
 
-    tuple[i].primaryKey->name = name;
-    tuple[i].primaryKey->value = value;
+    tuples[i].primaryKey->name = name;
+    tuples[i].primaryKey->value = value;
   }
 
   for(int i = 0; i < count; i++) {
-    printf("%s\n", tuple[i].primaryKey->name);
-    printf("%s\n", tuple[i].primaryKey->value);
-    free(tuple[i].primaryKey->name);
-    free(tuple[i].primaryKey->value);
-    free(tuple[i].primaryKey);
+    printf("%s\n", tuples[i].primaryKey->name);
+    printf("%s\n", tuples[i].primaryKey->value);
+    free(tuples[i].primaryKey->name);
+    free(tuples[i].primaryKey->value);
+    free(tuples[i].primaryKey);
   }
-  free(tuple);
+  free(tuples);
 }
