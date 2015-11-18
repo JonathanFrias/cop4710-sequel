@@ -1,7 +1,8 @@
 #include "common.h"
 #include "assert.h"
 
-void exampleTable(void);
+struct Tuple* createExampleTable(int count);
+bool destroyExampleTable(struct Tuple*, int count);
 void testStore(void);
 void testRetrieve(void);
 void testParseGrammer(void);
@@ -36,9 +37,16 @@ void testStore(void) {
 void testRetrieve(void) {
 }
 
+/*
+ * No comment! <-- This is the most ironic thing ever!
+ * Seriously though, this is just the main method!
+ */
 int main(void) {
-  printf("===============Examlpe Table:\n");
-  exampleTable();
+  printf("===============Example Table:\n");
+
+  // create a table with 10 tuples.
+  struct Tuple* table = createExampleTable(10);
+  destroyExampleTable(table, 10);
   printf("\n===============testStore\n");
   testStore();
   printf("\n===============testRetrieve\n");
@@ -54,10 +62,7 @@ int main(void) {
  *  You'll notice here that it is simply a array
  *  of Tuple objects. (Hopefully that makes sense!)
  */
-void exampleTable(void) {
-  int count = 10;
-
-
+struct Tuple* createExampleTable(int count) {
   // Allocate space in memory for a known amount of tuples.
   struct Tuple* tuples = (struct Tuple*) malloc(sizeof(struct Tuple)*count);
 
@@ -71,8 +76,7 @@ void exampleTable(void) {
     char* name = malloc(sizeof(char)*12);
     char* value = malloc(sizeof(char)*12);
 
-    // initialize name and value variables to include
-    // our iterator i.
+    // initialize name and value variables
     sprintf(name, "name%d", i);
     sprintf(value, "value%d", i);
 
@@ -83,9 +87,21 @@ void exampleTable(void) {
   for(int i = 0; i < count; i++) {
     printf("%s\n", tuples[i].primaryKey->name);
     printf("%s\n", tuples[i].primaryKey->value);
+  }
+  return tuples;
+}
+
+/*
+ * Cleanup allocated memory from a table.
+ */
+bool destroyExampleTable(struct Tuple* tuples, int count) {
+  for(int i = 0; i < count; i++) {
+    printf("%s\n", tuples[i].primaryKey->name);
+    printf("%s\n", tuples[i].primaryKey->value);
     free(tuples[i].primaryKey->name);
     free(tuples[i].primaryKey->value);
     free(tuples[i].primaryKey);
   }
   free(tuples);
+  return true;
 }
