@@ -12,7 +12,7 @@ struct Field {
 };
 
 struct Tuple {
-  struct Field* id;
+  struct Field* primaryKey;
   struct Field* fields;
   int updatedAt;
 };

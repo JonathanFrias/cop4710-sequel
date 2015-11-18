@@ -1,7 +1,7 @@
 #include "common.h"
 #include "assert.h"
 
-void example1(void);
+void exampleTable(void);
 void testStore(void);
 void testRetrieve(void);
 void testParseGrammer(void);
@@ -37,22 +37,55 @@ void testRetrieve(void) {
 }
 
 int main(void) {
-  example1();
+  printf("===============Examlpe Table:\n");
+  exampleTable();
+  printf("\n===============testStore\n");
   testStore();
+  printf("\n===============testRetrieve\n");
   testRetrieve();
+  printf("\n===============testParseGrammer\n");
   testParseGrammer();
   return 0;
 }
 
-void example1(void) {
-  struct ParseTree* p = (struct ParseTree*) malloc(PARSETREE_SIZE);
-  p->commandType = SELECT;
-  p->table = "table1";
-  p->fields = malloc(FIELD_SIZE * 10);
+/*
+ *  This example represents the a sample of how
+ *  the contents of a table should be represented.
+ *  You'll notice here that it is simply a array
+ *  of Tuple objects. (Hopefully that makes sense!)
+ */
+void exampleTable(void) {
+  int count = 10;
 
-  printf("%s\n", p->table);
 
-  // cleanup
-  free(p->fields);
-  free(p);
+  // Allocate space in memory for a known amount of tuples.
+  struct Tuple* tuple = (struct Tuple*) malloc(sizeof(struct Tuple)*count);
+
+  for(int i = 0; i < count; i++) {
+    // Create a Field* that represents the primary key
+    struct Field* primaryKeyField = (struct Field*) malloc(sizeof(struct Field));
+
+    tuple[i].fields = primaryKeyField;
+    tuple[i].primaryKey = primaryKeyField;
+
+    char* name = malloc(sizeof(char)*12);
+    char* value = malloc(sizeof(char)*12);
+
+    // initialize name and value variables to include
+    // our iterator i.
+    sprintf(name, "name%d", i);
+    sprintf(value, "value%d", i);
+
+    tuple[i].primaryKey->name = name;
+    tuple[i].primaryKey->value = value;
+  }
+
+  for(int i = 0; i < count; i++) {
+    printf("%s\n", tuple[i].primaryKey->name);
+    printf("%s\n", tuple[i].primaryKey->value);
+    free(tuple[i].primaryKey->name);
+    free(tuple[i].primaryKey->value);
+    free(tuple[i].primaryKey);
+  }
+  free(tuple);
 }
