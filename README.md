@@ -8,7 +8,7 @@ something *soooo* cool)
 
 1. Please sign up for a github account. (Many employers will expect you
    to have one anyway, so now's as good a time as any)
-2. This uses a program called `git`, which is a version control system. 
+2. This uses a program called `git`, which is a version control system.
 - It is ideally suited for code collaboration. Pretty much anyone who
   is anybody in the computing space uses this: [Exhibit A: The Linux
 Kernel] (https://github.com/torvalds/linux)
@@ -31,7 +31,7 @@ We are using the C programming language!
 ## Proposed organizational Structure
 
 We need to get on the same page with who is doing what. For this reason,
-our first meeting should be about dividing up tasks as we see fit. 
+our first meeting should be about dividing up tasks as we see fit.
 
 A sample list off the top of my head we can start with:
 
@@ -45,12 +45,11 @@ A sample list off the top of my head we can start with:
 are some standard-ish software patterns to help us solve this problem.
 
 
-We will define some **interfaces** for each other. Remember in data
-structure how we talked about interfaces, and how they're basically
-*contracts*. Well we can make *contracts* with each other as to what kind
-of code we will write! This is awesome, because we know what the method
-names will be and what they will return. It helps keep the madness
-to a minimum.
+We will define some common **functions** (using a header file) for each other
+and treat them like *contracts*. These *contracts* with each other are for
+to what kind of code we will write! This is awesome, because we know what
+the method names will be and what they will return. Keep the madness to
+a minimum.
 
 
 ## Proposed Workflow
@@ -60,7 +59,7 @@ to a minimum.
 - Create a Pull Request (contains your changes) to be pulled into the
   mainline-codebase.
 - this gives you a chance to understand who is contributing what
-- If you have troubles with this procedure please contact me. 
+- If you have troubles with this procedure please contact me.
 - Most of these operations can be done through the web interface
   (**worst** case scenario)
 - There is tooling for using git. If you are not familiar I recommend
