@@ -2,7 +2,7 @@
 COMPILE_DIR := out
 
 # this is a variable that represents source files
-# File starting with 'test' are excluded from
+# Files starting with 'test' are excluded from
 # this list.
 SRC := $(wildcard *[^test*].c)
 
