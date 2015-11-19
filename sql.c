@@ -1,5 +1,8 @@
 #include "common.h"
 
-int main(void) {
+void SqlRun() 
+{
   printf("Hello World!\n");
+
+  getchar();
 }

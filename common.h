@@ -65,4 +65,6 @@ struct ParseTree* parseGrammer(char* sql);
 bool storeTuple(struct Tuple* tuples, int count);
 bool storeTable(struct Table* table);
 
-struct Table* retrieve(struct ParseTree* tree); // Tuple list returned must be NULL terminated.
+struct Table* retrieve(struct ParseTree* tree);
+struct Table* createTable(int count);
+void SqlRun();

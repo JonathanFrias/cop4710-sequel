@@ -76,6 +76,7 @@ int main(void) {
   printf("===============Example Table:\n");
 
   // create a table with 10 tuples.
+  createTable(10);
   struct Table* table = createExampleTable(10);
   printTable(table);
   destroyExampleTable(table);
@@ -87,6 +88,8 @@ int main(void) {
   testRetrieve();
   printf("\n===============testParseGrammer\n");
   testParseGrammer();
+
+  getchar();
   return 0;
 }
 
