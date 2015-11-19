@@ -28,6 +28,18 @@ of making your own.
 
 We are using the C programming language!
 
+As such, we have a makefile to asist in compiling the code!
+
+There are two makefile directives
+
+`make test` and `make all`
+
+Running `make test` will generate a executable binary at `out/test`
+that runs our test functions.
+
+Running `make all` will generate the rest of the source files into
+an executable called `out/sql`.
+
 ## Proposed organizational Structure
 
 We need to get on the same page with who is doing what. For this reason,
