@@ -1,0 +1,113 @@
+START -> COMMAND_LIST
+COMMAND_LIST -> COMMAND COMMAND_LIST2
+COMMAND_LIST2 -> COMMAND COMMAND_LIST2 
+	       | @
+COMMAND -> SYSTEM_COMMAND
+	 | DDL_COMMAND 
+	 | DML_COMMAND
+SYSTEM_COMMAND -> CREATE_DATABASE_COMMAND
+		| DROP_DATABASE_COMMAND
+		| COMMIT_COMMAND
+		| SAVE_COMMAND
+		| LOAD_DATABASE_COMMAND
+DDL_COMMAND -> CREATE_TABLE_COMMAND
+	     | DROP_TABLE_COMMAND
+DML_COMMAND -> INSERT_INTO_COMMAND
+	     | DELETE_FROM_COMMAND
+	     | UPDATE_COMMAND
+	     | W_UPDATE_COMMAND
+	     | SELECT_COMMAND
+	     | W_SELECT_COMMAND
+CREATE_DATABASE_COMMAND -> create database ID ;
+DROP_DATABASE_COMMAND -> drop database ID ;
+SAVE_COMMAND -> save ;
+COMMIT_COMMAND -> commit;
+LOAD_DATABASE_COMMAND -> load database ID ;
+CREATE_TABLE_COMMAND -> create table ID ( FIELD_DEF_LIST ) ;
+DROP_TABLE_COMMAND -> drop table ID ;
+INSERT_INTO_COMMAND -> insert into ID INSERT_INTO_COMMAND2
+INSERT_INTO_COMMAND2 -> ( FIELD_LIST ) VALUES ( LITERAL_LIST ) ;
+		      | VALUES ( LITERAL_LIST ) ;
+DELETE_FROM_COMMAND -> delete from ID DELETE_FROM_COMMAND2
+DELETE_FROM_COMMAND2 -> where CONDITION ; 
+		      | ;
+UPDATE_COMMAND -> update ID set ID = EXPRESSION UPDATE_COMMAND2
+UPDATE_COMMAND2 -> , ID = EXPRESSION UPDATE_COMMAND2
+		 | UPDATE_COMMAND3
+UPDATE_COMMAND3 -> where CONDITION ;
+		 | ;
+W_UPDATE_COMMAND -> wUPDATE ID set W_UPDATE_COMMAND2
+W_UPDATE_COMMAND2 -> DATE_TIME ID = EXPRESSION W_UPDATE_COMMAND3
+		   | ID = EXPRESSION W_UPDATE_COMMAND3
+W_UPDATE_COMMAND3 -> , W_UPDATE_COMMAND4 
+		   | W_UPDATE_COMMAND5
+W_UPDATE_COMMAND4 -> DATE_TIME ID = EXPRESSION W_UPDATE_COMMAND3
+		   | ID = EXPRESSION W_UPDATE_COMMAND3
+W_UPDATE_COMMAND5 -> where CONDITION ;
+		   | ;
+SELECT_COMMAND -> select * from ID ;
+w_SELECT_COMMAND -> wSelect w_SELECT_COMMAND2
+w_SELECT_COMMAND2 -> * from ID w_SELECT_COMMAND3
+		   | ( FIELD_LIST ) from ID w_SELECT_COMMAND3
+w_SELECT_COMMAND3 -> where CONDITION ;
+		   | ;
+FIELD_DEF_LIST -> FIELD_DEF FIELD_DEF_LIST2
+FIELD_DEF_LIST2 -> , FIELD_DEF FIELD_DEF_LIST2
+		 | @
+FIELD_DEF ->
+FIELD_LIST -> ID FIELD_LIST2
+FIELD_LIST2 -> , ID FIELD_LIST2
+	     | @
+LITERAL_LIST -> LITERAL LITERAL_LIST2
+LITERAL_LIST2 -> , LITERAL LITERAL_LIST2
+	       | @
+DATE_TIME -> DATE : TIME
+DATE -> date ( LITERAL / LITERAL / LITERAL )
+TIME -> LITERAL : LITERAL
+
+
+// SEMANTICS ****************
+// All ID's need to be checked for whether or not the ID exists in table (for field name)
+// in database (for table name) or in catalogue (for database name). ID's need to start
+// with a letter and then they can include integers (and maybe underscores?)
+
+// SAVE is actually the command to exit the program. COMMIT is different. COMMIT is supposed to 
+// be used to write the changes to memory as if all of the commands should be saved in a buffer
+// before COMMIT is executed. We might be able to do it so that the commands write to memory
+// immediately (like it should anyways -___- )
+
+// a LITERAL is an integer, decimal, or string. For the integers and decimals I'm not sure if
+// we should include negative numbers or not
+
+// for DATE, the LITERALs need to be exaxtly two digits long except for the last one which can 
+// be two or four digits long. The first literal should be b/w 01-12, the second literal should
+// be 01-31 (based on month? I dont think it matters too much) and the last literat can be 00-99
+// or 0000-9999
+
+// for TIME the first literal should be exactly two digits long ranging from 00-23 and the second
+// literal should also be exactly two digits ranging from 00-59
+
+
+
+// Tokens ...
+create 
+drop
+load
+save
+commit
+database
+table
+insert
+into
+from
+where
+set
+delete
+ID
+LITERAL
+=
+(
+)
+*
+,
+;
