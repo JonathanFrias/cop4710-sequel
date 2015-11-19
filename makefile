@@ -13,4 +13,5 @@ all: $(SRC)
 
 # Run this with 'make test', then './out/test'
 test:
+	mkdir -p $(COMPILE_DIR)
 	cc test.c -g -std=gnu99 -o $(COMPILE_DIR)/test

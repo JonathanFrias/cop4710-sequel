@@ -52,11 +52,17 @@ struct ParseTree {
   struct Field* insertFields;
 };
 
+struct Table {
+  struct Tuple* tuples;
+  int count;
+  char* name;
+};
 
 struct ParseTree* parseGrammer(char* sql);
 
 // Store/Retrieve
 
-void store(struct Tuple* tuples, int count);
+bool storeTuple(struct Tuple* tuples, int count);
+bool storeTable(struct Table* table);
 
-struct Tuple* retrieve(struct ParseTree tree); // Tuple list returned must be NULL terminated.
+struct Table* retrieve(struct ParseTree* tree); // Tuple list returned must be NULL terminated.

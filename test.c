@@ -1,21 +1,30 @@
 #include "common.h"
 #include "assert.h"
 
-struct Tuple* createExampleTable(int count);
-bool destroyExampleTable(struct Tuple*, int count);
+struct Table* createExampleTable(int count);
+bool destroyExampleTable(struct Table*);
 void testStore(void);
 void testRetrieve(void);
 void testParseGrammer(void);
+void printTable(struct Table* table);
 
+// The following method stubs are not implemented!
+// When they are implemented, you can remove them
+// from here and link to the full function using our
+// common header file!
 struct ParseTree* parseGrammer(char* sql) {
   return NULL;
 }
 
-void store(struct Tuple* tuples, int count) {
-  return;
+bool storeTuples(struct Tuple* tuples, int count) {
+  return false;
 }
 
-struct Tuple* retrieve(struct ParseTree tree) {
+bool storeTable(struct Table* table) {
+  return false;
+}
+
+struct Table* retrieve(struct ParseTree* tree) {
   return NULL;
 }
 
@@ -32,24 +41,49 @@ void testParseGrammer(void) {
 }
 
 void testStore(void) {
+  struct Table* table = createExampleTable(10);
+
+  bool res = storeTuples(table->tuples, 10);
+  assert(res, "storeTuples function did not report success!");
+
+  bool res2 = storeTable(table);
+  assert(res, "storeTable function did not report success!");
 }
 
 void testRetrieve(void) {
+  // setup
+  struct Table* table = createExampleTable(10);
+  bool res = storeTuples(table->tuples, 10);
+
+  //test
+  char sql[100];
+  sprintf(sql, "select * from %s;\n", table->name);
+
+  struct ParseTree* parseTree = parseGrammer(sql);
+
+  struct Table* results = retrieve(parseTree);
+  assert(results != 0, "retrieve operation returned a null pointer!");
+  assert(results->count == table->count, "All records not stored correctly!");
+
+  //teardown
+  destroyExampleTable(table);
 }
 
 /*
- * No comment! <-- This is the most ironic thing ever!
- * Seriously though, this is just the main method!
+ * This is just the main method!
  */
 int main(void) {
   printf("===============Example Table:\n");
 
   // create a table with 10 tuples.
-  struct Tuple* table = createExampleTable(10);
-  destroyExampleTable(table, 10);
+  struct Table* table = createExampleTable(10);
+  printTable(table);
+  destroyExampleTable(table);
+
   printf("\n===============testStore\n");
   testStore();
   printf("\n===============testRetrieve\n");
+
   testRetrieve();
   printf("\n===============testParseGrammer\n");
   testParseGrammer();
@@ -62,7 +96,7 @@ int main(void) {
  *  You'll notice here that it is simply a array
  *  of Tuple objects. (Hopefully that makes sense!)
  */
-struct Tuple* createExampleTable(int count) {
+struct Table* createExampleTable(int count) {
   // Allocate space in memory for a known amount of tuples.
   struct Tuple* tuples = (struct Tuple*) malloc(sizeof(struct Tuple)*count);
 
@@ -84,24 +118,34 @@ struct Tuple* createExampleTable(int count) {
     tuples[i].primaryKey->value = value;
   }
 
-  for(int i = 0; i < count; i++) {
-    printf("%s\n", tuples[i].primaryKey->name);
-    printf("%s\n", tuples[i].primaryKey->value);
+  // Allocate space in memory for a table construct
+  struct Table* table = (struct Table*) malloc(sizeof(struct Table));
+  table->tuples = tuples;
+  table->count = count;
+  table->name = "exampleTable";
+  return table;
+}
+
+void printTable(struct Table* table) {
+  for(int i = 0; i < table->count; i++) {
+    printf("%s\n", table->tuples[i].primaryKey->name);
+    printf("%s\n", table->tuples[i].primaryKey->value);
   }
-  return tuples;
+  return;
 }
 
 /*
  * Cleanup allocated memory from a table.
  */
-bool destroyExampleTable(struct Tuple* tuples, int count) {
-  for(int i = 0; i < count; i++) {
-    printf("%s\n", tuples[i].primaryKey->name);
-    printf("%s\n", tuples[i].primaryKey->value);
-    free(tuples[i].primaryKey->name);
-    free(tuples[i].primaryKey->value);
-    free(tuples[i].primaryKey);
+bool destroyExampleTable(struct Table* table) {
+  for(int i = 0; i < table->count; i++) {
+    printf("%s\n", table->tuples[i].primaryKey->name);
+    printf("%s\n", table->tuples[i].primaryKey->value);
+    free(table->tuples[i].primaryKey->name);
+    free(table->tuples[i].primaryKey->value);
+    free(table->tuples[i].primaryKey);
   }
-  free(tuples);
+  free(table->tuples);
+  free(table);
   return true;
 }
