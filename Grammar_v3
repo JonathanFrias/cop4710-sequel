@@ -21,7 +21,6 @@ DML_COMMAND -> INSERT_INTO_COMMAND
 CREATE_DATABASE_COMMAND -> create database ID ;
 DROP_DATABASE_COMMAND -> drop database ID ;
 SAVE_COMMAND -> save ;
-COMMIT_COMMAND -> commit;
 LOAD_DATABASE_COMMAND -> load database ID ;
 CREATE_TABLE_COMMAND -> create table ID ( FIELD_DEF_LIST ) ;
 DROP_TABLE_COMMAND -> drop table ID ;
@@ -36,15 +35,6 @@ UPDATE_COMMAND2 -> , ID = LITERAL UPDATE_COMMAND2
 		 | UPDATE_COMMAND3
 UPDATE_COMMAND3 -> where CONDITION ;
 		 | ;
-W_UPDATE_COMMAND -> wUPDATE ID set W_UPDATE_COMMAND2
-W_UPDATE_COMMAND2 -> DATE_TIME ID = LITERAL W_UPDATE_COMMAND3
-		   | ID = LITERAL W_UPDATE_COMMAND3
-W_UPDATE_COMMAND3 -> , W_UPDATE_COMMAND4 
-		   | W_UPDATE_COMMAND5
-W_UPDATE_COMMAND4 -> DATE_TIME ID = LITERAL W_UPDATE_COMMAND3
-		   | ID = LITERAL W_UPDATE_COMMAND3
-W_UPDATE_COMMAND5 -> where CONDITION ;
-		   | ;
 SELECT_COMMAND -> select * from ID ;
 w_SELECT_COMMAND -> wSelect w_SELECT_COMMAND2
 w_SELECT_COMMAND2 -> * from ID w_SELECT_COMMAND3
@@ -54,16 +44,26 @@ w_SELECT_COMMAND3 -> where CONDITION ;
 FIELD_DEF_LIST -> FIELD_DEF FIELD_DEF_LIST2
 FIELD_DEF_LIST2 -> , FIELD_DEF FIELD_DEF_LIST2
 		 | @
-FIELD_DEF ->
+FIELD_DEF -> FIELD_TYPE ID
 FIELD_LIST -> ID FIELD_LIST2
 FIELD_LIST2 -> , ID FIELD_LIST2
 	     | @
 LITERAL_LIST -> LITERAL LITERAL_LIST2
 LITERAL_LIST2 -> , LITERAL LITERAL_LIST2
 	       | @
-DATE_TIME -> DATE : TIME
-DATE -> date ( LITERAL / LITERAL / LITERAL )
-TIME -> LITERAL : LITERAL
+CONDITION -> ID COMPARE LITERAL
+COMPARE -> >
+		 | <
+		 | >=
+		 | <=
+		 | == 
+		 | !=
+FIELD_TYPE -> integer
+		    | integer [ LITERAL ]
+			| number ( LITERAL )
+			| number ( LITERAL , LITERAL )
+			| number
+			| character( LITERAL )
 
 
 // SEMANTICS ****************
@@ -71,22 +71,17 @@ TIME -> LITERAL : LITERAL
 // in database (for table name) or in catalogue (for database name). ID's need to start
 // with a letter and then they can include integers (and maybe underscores?)
 
-// SAVE is actually the command to exit the program. COMMIT is different. COMMIT is supposed to 
-// be used to write the changes to memory as if all of the commands should be saved in a buffer
-// before COMMIT is executed. We might be able to do it so that the commands write to memory
-// immediately (like it should anyways -___- )
+// SAVE is actually the command to exit the program. 
 
 // a LITERAL is an integer, decimal, or string. For the integers and decimals I'm not sure if
 // we should include negative numbers or not
 
-// for DATE, the LITERALs need to be exaxtly two digits long except for the last one which can 
-// be two or four digits long. The first literal should be b/w 01-12, the second literal should
-// be 01-31 (based on month? I dont think it matters too much) and the last literat can be 00-99
-// or 0000-9999
+// the system will automatically include the timestamp. No user entry
 
-// for TIME the first literal should be exactly two digits long ranging from 00-23 and the second
-// literal should also be exactly two digits ranging from 00-59
-
+// for the FIELD_TYPEs, the LITERALs in the parentheses need to be ints. For number, the first
+// LITERAL indicates the maximum number of digits to the left of the decimal and the second
+// LITERAL indicates the number of digits to the right of the decimal. For character and integer,
+// the LITERAL just indicates the maximum number of digits or characters the field will hold
 
 
 // Tokens ...
@@ -103,6 +98,9 @@ from
 where
 set
 delete
+integer
+number
+character
 ID
 LITERAL
 =
@@ -111,3 +109,9 @@ LITERAL
 *
 ,
 ;
+>
+>=
+<
+<=
+==
+!=
