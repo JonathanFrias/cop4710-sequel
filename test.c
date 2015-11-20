@@ -76,16 +76,28 @@ int main(void) {
   printf("===============Example Table:\n");
 
   // create a table with 10 tuples.
-  createTable(10);
-  struct Table* table = createExampleTable(10);
-  printTable(table);
-  destroyExampleTable(table);
+  struct Table* table = createTable(10);
 
+  printf("%10s%10s\n", "EMP", "EMP#");
+  for (int i = 0; i < 10; i++)
+	  printf("%10s%10d\n", table->tuples[i].primaryKey->name, table->tuples[i].primaryKey->value);
+  printf("\n");
+
+
+  SqlRun();
+  //struct Table* table = createExampleTable(10);
+  //printTable(table);
+  //destroyExampleTable(table);
+
+  getchar();
   printf("\n===============testStore\n");
   testStore();
-  printf("\n===============testRetrieve\n");
 
+  getchar();
+  printf("\n===============testRetrieve\n");
   testRetrieve();
+
+  getchar();
   printf("\n===============testParseGrammer\n");
   testParseGrammer();
 
@@ -142,8 +154,6 @@ void printTable(struct Table* table) {
  */
 bool destroyExampleTable(struct Table* table) {
   for(int i = 0; i < table->count; i++) {
-    printf("%s\n", table->tuples[i].primaryKey->name);
-    printf("%s\n", table->tuples[i].primaryKey->value);
     free(table->tuples[i].primaryKey->name);
     free(table->tuples[i].primaryKey->value);
     free(table->tuples[i].primaryKey);

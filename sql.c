@@ -2,7 +2,7 @@
 
 void SqlRun() 
 {
-  printf("Hello World!\n");
+  printf("\nHello World!\n");
 
   getchar();
 }
