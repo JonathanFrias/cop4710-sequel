@@ -4,7 +4,7 @@ COMPILE_DIR := out
 # this is a variable that represents source files
 # Files starting with 'test' are excluded from
 # this list.
-SRC := $(wildcard *[^test*].c)
+SRC := $(wildcard src/*[^test*].c)
 
 # compile the entire codebase.
 all: $(SRC)
@@ -14,4 +14,4 @@ all: $(SRC)
 # Run this with 'make test', then './out/test'
 test:
 	mkdir -p $(COMPILE_DIR)
-	cc test.c -g -std=gnu99 -o $(COMPILE_DIR)/test
+	cc src/test.c -g -std=gnu99 -o $(COMPILE_DIR)/test
