@@ -2,9 +2,12 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
+#include <unistd.h>
 
 #define PARSETREE_SIZE sizeof(struct ParseTree)
 #define FIELD_SIZE sizeof(struct Field)
+
+#define DATABASE_DIR "out/databases"
 
 struct Field {
   char* name;
@@ -66,3 +69,4 @@ bool storeTuple(struct Tuple* tuples, int count);
 bool storeTable(struct Table* table);
 
 struct Table* retrieve(struct ParseTree* tree); // Tuple list returned must be NULL terminated.
+void createDatabase(char* database);

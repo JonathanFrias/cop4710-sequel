@@ -14,4 +14,4 @@ all: $(SRC)
 # Run this with 'make test', then './out/test'
 test:
 	mkdir -p $(COMPILE_DIR)
-	cc src/test.c -g -std=gnu99 -o $(COMPILE_DIR)/test
+	cc src/test.c src/store.c -std=gnu99 -o $(COMPILE_DIR)/test
