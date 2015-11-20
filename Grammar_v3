@@ -101,6 +101,9 @@ delete
 integer
 number
 character
+update
+select
+wselect
 ID
 LITERAL
 =
