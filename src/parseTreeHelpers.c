@@ -1,13 +1,13 @@
 #include "common.h"
 
-
 /*
  * The following functions are just helpers to create
  * sample valid parseTree structures with vales you can
  * override.
  */
-struct ParseTree* createSelectParseTree(char* table, struct Field* fields, struct Where* whereConstraints);
 struct Where* createWhere(struct Field* fields, whereCompare compareType);
+struct ParseTree* createWSelectParseTree(char* table, struct Field* projection, struct Where* whereConstraints);
+struct ParseTree* createSelectParseTree(char* table, struct Field* fields, struct Where* whereConstraints);
 
 struct Field* createField(char* name, char* value) {
   struct Field* field = (struct Field*) malloc(sizeof(struct Field));
@@ -38,8 +38,10 @@ struct Where* createWhere(struct Field* field, whereCompare compareType) {
   return whereCondition;
 }
 
-struct ParseTree* createSelectParseTree(char* table, struct Field* fields, struct Where* whereConstraints) {
+struct ParseTree* createSelectParseTree(char* table, struct Field* projection, struct Where* whereConstraints) {
   struct ParseTree* tree = malloc(PARSETREE_SIZE);
+
+  tree->commandType = SELECT;
 
   if(table) {
     tree->table = table;
@@ -47,12 +49,32 @@ struct ParseTree* createSelectParseTree(char* table, struct Field* fields, struc
     tree->table = "default_table";
   }
 
-  if(fields) {
-    tree->fields = fields;
+  if(projection) {
+    tree->fields = projection;
   } else {
     tree->fields = createField("selectName", "selectVal");
   }
 
+  return tree;
+}
+
+struct ParseTree* createWSelectParseTree(char* table, struct Field* projection, struct Where* whereConstraints) {
+
+  struct ParseTree* tree = malloc(PARSETREE_SIZE);
+
+  tree->commandType = wSELECT;
+
+  if(table) {
+    tree->table = table;
+  } else {
+    tree->table = "default_table";
+  }
+
+  if(projection) {
+    tree->fields = projection;
+  } else {
+    tree->fields = createField("selectName", "selectVal");
+  }
   return tree;
 }
 

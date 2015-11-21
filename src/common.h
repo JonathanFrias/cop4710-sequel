@@ -3,10 +3,12 @@
 #include <stdbool.h>
 #include <string.h>
 #include <unistd.h>
+#include "assert.h"
 
-#define WHERE_SIZE sizeof(struct Where)
 #define PARSETREE_SIZE sizeof(struct ParseTree)
 #define FIELD_SIZE sizeof(struct Field)
+#define WHERE_SIZE sizeof(struct Where)
+#define TUPLE_SIZE sizeof(struct Tuple)
 #define FIELD_LIMIT 100 // max num of columns
 #define NAME_LIMIT 100 // Max length for user-provided names
 
@@ -32,11 +34,11 @@ typedef enum {
   // ...
 } whereCompare;
 
-struct {
-  struct Field field;
+struct Where {
+  struct Field* field;
   void* target;
   whereCompare compareType;
-} Where;
+};
 
 /*
  * The most important struct

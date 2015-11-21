@@ -1,5 +1,4 @@
 #include "common.h"
-#include "assert.h"
 
 // Test functions!
 struct Table* createExampleTable(int count);
@@ -34,10 +33,8 @@ struct Table* retrieve(struct ParseTree* tree) {
 void testCreateTable(void) {
   createDatabase("foo");
   assert(strcmp(currentDatabase, "foo") == 0, "currentDatabase should be set!");
-
-  createTable("bar");
-
 }
+
 void testParseGrammer(void) {
   struct ParseTree* parseTree = parseGrammer("SELECT id from table1");
 
@@ -97,7 +94,6 @@ int main(void) {
   printf("\n===============testStore\n");
   testStore();
   printf("\n===============testRetrieve\n");
-
   testRetrieve();
   printf("\n===============testParseGrammer\n");
   testParseGrammer();

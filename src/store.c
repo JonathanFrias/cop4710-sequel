@@ -1,5 +1,4 @@
 #include "common.h"
-#include "assert.h"
 #include <sys/stat.h>
 
 /*
