@@ -1,32 +1,47 @@
-#include <sys/types.h>
-#include <sys/stat.h>
 #include "common.h"
+#include "assert.h"
+#include <sys/stat.h>
 
-void setupStorage(void) {
-  struct stat st = {0};
-
-  char folderPath[100];
-  getcwd(folderPath, sizeof(folderPath));
-
-  sprintf(folderPath, "%s/out/%s/%s", folderPath, DATABASE_DIR);
-
+/*
+ * This function creates a folder.
+ * The folder name is the name of the database
+ */
+void createDatabase(char* database) {
   mkdir(DATABASE_DIR, 0700);
 
+  char folderPath[NAME_LIMIT];
+  getcwd(folderPath, sizeof(folderPath));
+
+  sprintf(folderPath, "%s/%s", DATABASE_DIR, database);
+  mkdir(folderPath, 0700);
+
+  sprintf(currentDatabase, "%s", database);
 }
 
-void createDatabase(char* database) {
-  setupStorage();
-  exit(2);
-  struct stat st = {0};
+void createTable(struct ParseTree* parseTree) {
 
-  char folderPath[100];
-  getcwd(folderPath, sizeof(folderPath));
+  // validations!
+  assert(parseTree->commandType == CREATE_TABLE,
+    "Expectd parseTree commandType to be CREATE_TABLE");
+  assert(parseTree->fields, "Fields must be provided!");
+  assert(parseTree->table, "Table name must be provided");
+  assert(currentDatabase, "Please select a database!");
 
-  sprintf(folderPath, "%s/out/%s/%s", folderPath, DATABASE_DIR, database);
+  // Create a table file in the default database directory
+  char tablePath[NAME_LIMIT];
+  sprintf(tablePath, "%s/%s", DATABASE_DIR, parseTree->table);
+  FILE* tableFile = fopen(tablePath, "w");
 
-  mkdir(DATABASE_DIR, 0700);
-  printf("\n%s\n", folderPath);
-  if (stat(folderPath, &st) == -1) {
-    mkdir(folderPath, 0700);
+  int i = 0;
+
+  struct Field* fields[FIELD_LIMIT];
+  char firstLine[FIELD_LIMIT*NAME_LIMIT+FIELD_LIMIT-1];
+
+  while(parseTree->fields+i != NULL) {
+    char name[NAME_LIMIT];
+    fields[i] = parseTree->fields+i;
+    sprintf(firstLine, "%s|%s", firstLine, parseTree->fields[i].name);
+    i += 1;
   }
+  fputs(firstLine, tableFile);
 }

@@ -1,12 +1,14 @@
 #include "common.h"
 #include "assert.h"
 
+// Test functions!
 struct Table* createExampleTable(int count);
 bool destroyExampleTable(struct Table*);
 void testStore(void);
 void testRetrieve(void);
 void testParseGrammer(void);
 void printTable(struct Table* table);
+void testCreateTable(void);
 
 // The following method stubs are not implemented!
 // When they are implemented, you can remove them
@@ -28,6 +30,14 @@ struct Table* retrieve(struct ParseTree* tree) {
   return NULL;
 }
 
+
+void testCreateTable(void) {
+  createDatabase("foo");
+  assert(strcmp(currentDatabase, "foo") == 0, "currentDatabase should be set!");
+
+  createTable("bar");
+
+}
 void testParseGrammer(void) {
   struct ParseTree* parseTree = parseGrammer("SELECT id from table1");
 
@@ -38,6 +48,7 @@ void testParseGrammer(void) {
   assert(parseTree->updateFields == NULL, "UPDATE fields were not specified!");
   assert(parseTree->insertFields == NULL, "INSERT fields were not specified!");
   assert(parseTree->fields != NULL, "Field should not be null!");
+  assert(parseTree->fields+1 == NULL, "Field list should be NULL terminated!");
 }
 
 void testStore(void) {
@@ -73,6 +84,9 @@ void testRetrieve(void) {
  * This is just the main method!
  */
 int main(void) {
+  printf("===============Create Database:\n");
+  createDatabase("foo");
+
   printf("===============Example Table:\n");
 
   // create a table with 10 tuples.

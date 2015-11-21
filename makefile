@@ -15,3 +15,6 @@ all: $(SRC)
 test:
 	mkdir -p $(COMPILE_DIR)
 	cc src/test.c src/store.c -std=gnu99 -o $(COMPILE_DIR)/test
+
+clean:
+	rm -rf out

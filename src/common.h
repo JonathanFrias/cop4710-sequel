@@ -4,10 +4,16 @@
 #include <string.h>
 #include <unistd.h>
 
+#define WHERE_SIZE sizeof(struct Where)
 #define PARSETREE_SIZE sizeof(struct ParseTree)
 #define FIELD_SIZE sizeof(struct Field)
+#define FIELD_LIMIT 100 // max num of columns
+#define NAME_LIMIT 100 // Max length for user-provided names
 
 #define DATABASE_DIR "out/databases"
+
+// Defines what database we're currently working on
+static char currentDatabase[NAME_LIMIT];
 
 struct Field {
   char* name;
@@ -20,18 +26,25 @@ struct Tuple {
   int updatedAt;
 };
 
+typedef enum {
+  LESS_THAN,
+  GREATHER_THAN,
+  // ...
+} whereCompare;
+
 struct {
   struct Field field;
   void* target;
-  enum {
-    LESS_THAN,
-    GREATHER_THAN,
-    // ...
-  } compareType;
+  whereCompare compareType;
 } Where;
 
-// parse 
-
+/*
+ * The most important struct
+ * in this whole program.
+ * Please note, by conventions
+ * Field pointers should be NULL
+ * terminated
+ */
 struct ParseTree {
   enum {
     CREATE_DATABASE,
@@ -48,7 +61,7 @@ struct ParseTree {
     wUPDATE,
     DELETE
   } commandType;
-  char* table;
+  char* table; // name of table
   struct Field* fields;
   struct Where* whereConstraints;
   struct Field* updateFields;
@@ -70,3 +83,4 @@ bool storeTable(struct Table* table);
 
 struct Table* retrieve(struct ParseTree* tree); // Tuple list returned must be NULL terminated.
 void createDatabase(char* database);
+void createTable(struct ParseTree* parseTree);
