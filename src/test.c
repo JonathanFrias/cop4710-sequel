@@ -37,24 +37,32 @@ void testCreateTable(void) {
   assert(strcmp(currentDatabase, "foo") == 0, "currentDatabase should be set!");
   char tableFolderPath[1000];
 
-  char* names[4] = {
+  char names[FIELD_SIZE][NAME_LIMIT] = {
     "name1",
     "name2",
     "name3",
     "name4",
   };
 
-  char* values[4] = {
+  char values[FIELD_SIZE][VALUE_LIMIT] = {
     "value1",
     "value2",
     "value3",
     "value4",
   };
-  struct Field* fields = createFieldList(*names, *values, 4);
+  struct Field* fields = createFieldList(names, values, 4);
 
-  createTable(createCreateTableParseTree("bar", fields));
+  struct ParseTree* createTableCmd = createCreateTableParseTree("bar", fields);
+  createTable(createTableCmd);
   sprintf(tableFolderPath, "%s/foo/bar", DATABASE_DIR);
   assert(access(tableFolderPath, F_OK) != -1, "Table file was not constructed!");
+
+  char fileContents[1000];
+  FILE* file = fopen(tableFolderPath, "r");
+  fgets(fileContents, 999, file);
+
+  assert(strcmp(fileContents, "name1|name2|name3|name4\n") == 0, "Table was not written correctly!");
+  fclose(file);
 }
 
 void testParseGrammer(void) {
@@ -105,9 +113,6 @@ void testRetrieve(void) {
 int main(void) {
   printf("===============Create Table:\n");
   testCreateTable();
-
-  printf("===============Create Table:\n");
-
   printf("===============Example Table:\n");
 
   // create a table with 10 tuples.

@@ -17,10 +17,25 @@ void createDatabase(struct ParseTree* createCommand) {
   sprintf(folderPath, "%s/%s", DATABASE_DIR, createCommand->table);
   mkdir(folderPath, 0700);
 
-  snprintf(currentDatabase, sizeof(currentDatabase),
-     "%s", createCommand->table);
+
+  setDatabase(createCommand->table);
 }
 
+/*
+ * Sets the global currentDatabase variable
+ */
+void setDatabase(char* database) {
+  if(currentDatabase == NULL) {
+    currentDatabase = calloc(1, NAME_LIMIT);
+  }
+  snprintf(currentDatabase, NAME_LIMIT,
+     "%s", database);
+}
+
+/**
+ * Creates the table structure on disk.
+ * Assumes that field list is NULL terminated.
+ */
 void createTable(struct ParseTree* parseTree) {
 
   // validations!
@@ -31,21 +46,25 @@ void createTable(struct ParseTree* parseTree) {
   assert(currentDatabase, "Please select a database!");
 
   // Create a table file in the default database directory
-  char tablePath[NAME_LIMIT];
-  sprintf(tablePath, "%s/%s", DATABASE_DIR, parseTree->table);
+  char tablePath[1000];
+  snprintf(tablePath, sizeof(tablePath), "%s/%s/%s", DATABASE_DIR, currentDatabase, parseTree->table);
   FILE* tableFile = fopen(tablePath, "w");
 
   int i = 0;
 
   struct Field* fields[FIELD_LIMIT];
-  char firstLine[FIELD_LIMIT*NAME_LIMIT+FIELD_LIMIT-1];
+  char headerLine[FIELD_LIMIT*NAME_LIMIT+FIELD_LIMIT];
+  char tmpLine[FIELD_LIMIT*NAME_LIMIT+FIELD_LIMIT];
   struct Field* providedFields = parseTree->fields;
 
-  while(parseTree->fields+i != NULL) {
-    char name[NAME_LIMIT];
-    fields[i] = parseTree->fields+i;
-    sprintf(firstLine, "%s|%s", firstLine, parseTree->fields[i].name);
-    i += 1;
+  while((*(parseTree->fields+i)).name != NULL) {
+    char name[NAME_LIMIT] = "";
+    snprintf(name, sizeof(name), parseTree->fields[i].name);
+    snprintf(tmpLine, sizeof(headerLine), headerLine);
+    snprintf(headerLine, sizeof(headerLine), "%s|%s", tmpLine, name);
+    i++;
   }
-  fputs(firstLine, tableFile);
+  fputs(headerLine+1, tableFile); // +1 to ignore leading '|'
+  fputs("\n", tableFile);
+  fclose(tableFile);
 }

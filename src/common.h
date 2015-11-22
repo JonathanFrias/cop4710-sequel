@@ -6,11 +6,12 @@
 #include "assert.h"
 
 #define PARSETREE_SIZE sizeof(struct ParseTree)
-#define FIELD_SIZE sizeof(struct Field)
 #define WHERE_SIZE sizeof(struct Where)
+#define FIELD_SIZE sizeof(struct Field)
 #define TUPLE_SIZE sizeof(struct Tuple)
 #define FIELD_LIMIT 100 // max num of columns
-#define NAME_LIMIT 100 // Max length for user-provided names
+#define NAME_LIMIT 30 // Max length for user-provided names
+#define VALUE_LIMIT 50 // Max length for user-provided values
 
 #define DATABASE_DIR "out/databases"
 
@@ -86,4 +87,4 @@ bool storeTable(struct Table* table);
 struct Table* retrieve(struct ParseTree* tree); // Tuple list returned must be NULL terminated.
 void createDatabase(struct ParseTree* createCommand);
 void createTable(struct ParseTree* parseTree);
-
+void setDatabase(char*);
