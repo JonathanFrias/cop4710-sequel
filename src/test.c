@@ -62,7 +62,11 @@ void testCreateTable(void) {
   fgets(fileContents, 999, file);
 
   assert(strcmp(fileContents, "name1|name2|name3|name4\n") == 0, "Table was not written correctly!");
+
+  // cleanup garbage
   fclose(file);
+  destroyParseTree(createDBCommand);
+  destroyParseTree(createTableCmd);
 }
 
 void testParseGrammer(void) {

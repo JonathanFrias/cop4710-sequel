@@ -9,3 +9,5 @@ struct ParseTree* createSelectParseTree(char* table, struct Field* fields, struc
 struct ParseTree* createCreateDatabaseParseTree(char* databaseName);
 struct ParseTree* createCreateTableParseTree(char*, struct Field*);
 struct Field* createFieldList(char names[FIELD_LIMIT][NAME_LIMIT], char values[FIELD_LIMIT][VALUE_LIMIT], int count);
+
+void destroyParseTree(struct ParseTree*);

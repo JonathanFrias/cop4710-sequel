@@ -98,3 +98,19 @@ struct ParseTree* createCreateTableParseTree(char* table,
   tree->table = table;
   return tree;
 }
+
+void destroyParseTree(struct ParseTree* tree) {
+
+  assert(tree, "Cannot destroy invalid tree");
+
+  switch(tree->commandType) {
+    case CREATE_TABLE:
+      if(tree->fields) {
+        free(tree->fields);
+      }
+    case CREATE_DATABASE:
+    default:
+      free(tree);
+  }
+  return;
+}
