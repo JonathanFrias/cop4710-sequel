@@ -1,4 +1,5 @@
 #include "common.h"
+#include "parseTreeHelpers.h"
 
 // Test functions!
 struct Table* createExampleTable(int count);
@@ -29,10 +30,31 @@ struct Table* retrieve(struct ParseTree* tree) {
   return NULL;
 }
 
-
 void testCreateTable(void) {
-  createDatabase("foo");
+
+  struct ParseTree* createDBCommand = createCreateDatabaseParseTree("foo");
+  createDatabase(createDBCommand);
   assert(strcmp(currentDatabase, "foo") == 0, "currentDatabase should be set!");
+  char tableFolderPath[1000];
+
+  char* names[4] = {
+    "name1",
+    "name2",
+    "name3",
+    "name4",
+  };
+
+  char* values[4] = {
+    "value1",
+    "value2",
+    "value3",
+    "value4",
+  };
+  struct Field* fields = createFieldList(*names, *values, 4);
+
+  createTable(createCreateTableParseTree("bar", fields));
+  sprintf(tableFolderPath, "%s/foo/bar", DATABASE_DIR);
+  assert(access(tableFolderPath, F_OK) != -1, "Table file was not constructed!");
 }
 
 void testParseGrammer(void) {
@@ -81,8 +103,10 @@ void testRetrieve(void) {
  * This is just the main method!
  */
 int main(void) {
-  printf("===============Create Database:\n");
-  createDatabase("foo");
+  printf("===============Create Table:\n");
+  testCreateTable();
+
+  printf("===============Create Table:\n");
 
   printf("===============Example Table:\n");
 

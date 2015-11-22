@@ -15,7 +15,7 @@
 #define DATABASE_DIR "out/databases"
 
 // Defines what database we're currently working on
-static char currentDatabase[NAME_LIMIT];
+char* currentDatabase;
 
 struct Field {
   char* name;
@@ -84,5 +84,6 @@ bool storeTuple(struct Tuple* tuples, int count);
 bool storeTable(struct Table* table);
 
 struct Table* retrieve(struct ParseTree* tree); // Tuple list returned must be NULL terminated.
-void createDatabase(char* database);
+void createDatabase(struct ParseTree* createCommand);
 void createTable(struct ParseTree* parseTree);
+

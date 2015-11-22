@@ -11,7 +11,7 @@ all:
 # Run this with 'make test', then './out/test'
 test: src/test.c
 	mkdir -p $(COMPILE_DIR)
-	cc src/test.c src/assert.c src/store.c src/parseTreeHelpers.c -std=gnu99 -o $(COMPILE_DIR)/test
+	cc src/test.c src/assert.c src/store.c src/parseTreeHelpers.c -g -std=gnu99 -o $(COMPILE_DIR)/test
 
 clean:
 	rm -rf out

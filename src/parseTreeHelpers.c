@@ -1,16 +1,9 @@
 #include "common.h"
 
-/*
- * The following functions are just helpers to create
- * sample valid parseTree structures with vales you can
- * override.
- */
-struct Where* createWhere(struct Field* fields, whereCompare compareType);
-struct ParseTree* createWSelectParseTree(char* table, struct Field* projection, struct Where* whereConstraints);
-struct ParseTree* createSelectParseTree(char* table, struct Field* fields, struct Where* whereConstraints);
-
 struct Field* createField(char* name, char* value) {
-  struct Field* field = (struct Field*) malloc(sizeof(struct Field));
+
+  // MUST USE CALLOC, not MALLOC!
+  struct Field* field = (struct Field*) calloc(2, sizeof(struct Field));
 
   if(name) {
     field->name = name;
@@ -25,6 +18,16 @@ struct Field* createField(char* name, char* value) {
   }
 
   return field;
+}
+
+struct Field* createFieldList(char* names, char* values, int count) {
+  struct Field* fieldList = calloc(count+1, FIELD_SIZE);
+  for(int i = 0; i < count; i++) {
+    (fieldList+i)->name = (names+i);
+    (fieldList+i)->value = (values+i);
+  }
+
+  return fieldList;
 }
 
 struct Where* createWhere(struct Field* field, whereCompare compareType) {
@@ -78,3 +81,18 @@ struct ParseTree* createWSelectParseTree(char* table, struct Field* projection, 
   return tree;
 }
 
+struct ParseTree* createCreateDatabaseParseTree(char* databaseName) {
+  struct ParseTree* tree = malloc(PARSETREE_SIZE);
+  tree->commandType = CREATE_DATABASE;
+  tree->table = databaseName;
+  return tree;
+}
+
+struct ParseTree* createCreateTableParseTree(char* table,
+    struct Field* fields) {
+  struct ParseTree* tree = malloc(PARSETREE_SIZE);
+  tree->commandType = CREATE_TABLE;
+  tree->fields = fields;
+  tree->table = table;
+  return tree;
+}
