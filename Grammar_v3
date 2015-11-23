@@ -64,6 +64,7 @@ FIELD_TYPE -> integer
 			| number ( LITERAL , LITERAL )
 			| number
 			| character( LITERAL )
+			| date LITERAL / LITERAL / LITERAL
 
 
 // SEMANTICS ****************
@@ -73,15 +74,18 @@ FIELD_TYPE -> integer
 
 // SAVE is actually the command to exit the program. 
 
-// a LITERAL is an integer, decimal, or string. For the integers and decimals I'm not sure if
-// we should include negative numbers or not
+// a LITERAL is an integer, decimal, date or string. For the integers and decimals no negative
+// numbers are allowed
 
 // the system will automatically include the timestamp. No user entry
 
 // for the FIELD_TYPEs, the LITERALs in the parentheses need to be ints. For number, the first
 // LITERAL indicates the maximum number of digits to the left of the decimal and the second
 // LITERAL indicates the number of digits to the right of the decimal. For character and integer,
-// the LITERAL just indicates the maximum number of digits or characters the field will hold
+// the LITERAL just indicates the maximum number of digits or characters the field will hold. 
+// For the date field type, the first LITERAL has to be two digits between 01-12, the second 
+// literal has to be two digits between 01-31, and the third literal has two be exactly two or
+// four digits from 0000-9999 or 00-99
 
 
 // Tokens ...
