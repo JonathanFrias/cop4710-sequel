@@ -20,13 +20,14 @@ struct Field* createField(char* name, char* value) {
   return field;
 }
 
-struct Field* createFieldList(char* names, char* values, int count) {
+struct Field* createFieldList(char* names, char* values, FieldType types[FIELD_SIZE][1], int count) {
   // Must use CALLOC instead of MALLOC
   // because field list should be NULL TERMINATED!
   struct Field* fieldList = calloc(count+1, FIELD_SIZE);
   for(int i = 0; i < count; i++) {
     (fieldList+i)->name = (names+(i*NAME_LIMIT));
     (fieldList+i)->value = (values+(i*VALUE_LIMIT));
+    (fieldList+i)->fieldType = types[i][0];
   }
 
   return fieldList;

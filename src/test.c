@@ -45,12 +45,19 @@ void testCreateTable(void) {
   };
 
   char values[FIELD_SIZE][VALUE_LIMIT] = {
-    "value1",
+    "1",
     "value2",
-    "value3",
-    "value4",
+    "1/1/2015",
+    "3",
   };
-  struct Field* fields = createFieldList(names, values, 4);
+
+  FieldType types[FIELD_SIZE][1] = {
+    INTEGER,
+    TEXT,
+    DATE,
+    INTEGER,
+  };
+  struct Field* fields = createFieldList(names, values, types, 4);
 
   struct ParseTree* createTableCmd = createCreateTableParseTree("bar", fields);
   createTable(createTableCmd);
@@ -61,7 +68,7 @@ void testCreateTable(void) {
   FILE* file = fopen(tableFolderPath, "r");
   fgets(fileContents, 999, file);
 
-  assert(strcmp(fileContents, "name1|name2|name3|name4\n") == 0, "Table was not written correctly!");
+  assert(strcmp(fileContents, "name1[I]|name2[T]|name3[D]|name4[I]\n") == 0, "Table was not written correctly!");
 
   // cleanup garbage
   fclose(file);

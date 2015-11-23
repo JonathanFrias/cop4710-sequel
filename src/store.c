@@ -59,9 +59,10 @@ void createTable(struct ParseTree* parseTree) {
 
   while((*(parseTree->fields+i)).name != NULL) {
     char name[NAME_LIMIT] = "";
+    char type = parseTree->fields[i].fieldType;
     snprintf(name, sizeof(name), parseTree->fields[i].name);
     snprintf(tmpLine, sizeof(headerLine), headerLine);
-    snprintf(headerLine, sizeof(headerLine), "%s|%s", tmpLine, name);
+    snprintf(headerLine, sizeof(headerLine), "%s|%s[%c]", tmpLine, name, type);
     i++;
   }
   fputs(headerLine+1, tableFile); // +1 to ignore leading '|'

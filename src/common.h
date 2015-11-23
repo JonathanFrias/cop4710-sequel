@@ -18,9 +18,17 @@
 // Defines what database we're currently working on
 char* currentDatabase;
 
+
+typedef enum {
+  INTEGER='I',
+  DATE='D',
+  TEXT='T',
+} FieldType;
+
 struct Field {
   char* name;
   void* value;
+  FieldType fieldType;
 };
 
 struct Tuple {
