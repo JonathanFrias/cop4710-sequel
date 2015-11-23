@@ -64,11 +64,13 @@ void testCreateTable(void) {
   sprintf(tableFolderPath, "%s/foo/bar", DATABASE_DIR);
   assert(access(tableFolderPath, F_OK) != -1, "Table file was not constructed!");
 
-  char fileContents[1000];
+  char fileContents[RECORD_SIZE];
   FILE* file = fopen(tableFolderPath, "r");
-  fgets(fileContents, 999, file);
+  fgets(fileContents, RECORD_SIZE, file);
 
-  assert(strcmp(fileContents, "name1[I]|name2[T]|name3[D]|name4[I]\n") == 0, "Table was not written correctly!");
+  char* header = "name1[I]|name2[T]|name3[D]|name4[I]\n";
+  int offset = RECORD_SIZE - strlen(header) - 1;
+  assert(strcmp(fileContents+offset, header) == 0, "Table was not written correctly!");
 
   // cleanup garbage
   fclose(file);

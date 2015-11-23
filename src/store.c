@@ -65,7 +65,40 @@ void createTable(struct ParseTree* parseTree) {
     snprintf(headerLine, sizeof(headerLine), "%s|%s[%c]", tmpLine, name, type);
     i++;
   }
-  fputs(headerLine+1, tableFile); // +1 to ignore leading '|'
+  char line[RECORD_SIZE];
+  computePadding(headerLine+1, line, RECORD_SIZE); // +1 to ignore leading '|'
+
+  fputs(line, tableFile);
   fputs("\n", tableFile);
   fclose(tableFile);
+}
+
+/**
+ *
+ * Computes the padding for a given input, forcing the resulting
+ * string to be of the given size.
+ * This function pads the begining with a spaces, and the end with
+ * a new line character
+ * The result is stored in the result pointer.
+ */
+void computePadding(char* input, char* result, int size) {
+  int length = strlen(input) + 1;
+  int padding = size - length;
+
+  assert(padding >= 0, "Padding cannot be negative!");
+  int i = 0;
+  for(; i < padding-1; i++) {
+    result[i] = ' ';
+  }
+
+  int j = 0;
+  for(; i < size-1; i++, j++) {
+    result[i] = input[j];
+  }
+  result[size-2] = '\n';
+  result[size-1] = '\0';
+
+  assert(result[size-2] == '\n', "Newline not set!");
+  // The +1 is to count the '\0'
+  assert(strlen(result)+1 == size, "Record size is not correct!");
 }

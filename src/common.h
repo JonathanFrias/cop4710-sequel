@@ -20,7 +20,6 @@
 // Defines what database we're currently working on
 char* currentDatabase;
 
-
 typedef enum {
   INTEGER='I',
   DATE='D',
@@ -96,3 +95,4 @@ struct Table* retrieve(struct ParseTree* tree); // Tuple list returned must be N
 void createDatabase(struct ParseTree* createCommand);
 void createTable(struct ParseTree* parseTree);
 void setDatabase(char*);
+void computePadding(char* input, char* result, int max);
