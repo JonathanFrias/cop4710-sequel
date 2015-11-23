@@ -1,12 +1,14 @@
 #include "common.h"
-#include "assert.h"
+#include "parseTreeHelpers.h"
 
+// Test functions!
 struct Table* createExampleTable(int count);
 bool destroyExampleTable(struct Table*);
 void testStore(void);
 void testRetrieve(void);
 void testParseGrammer(void);
 void printTable(struct Table* table);
+void testCreateTable(void);
 
 // The following method stubs are not implemented!
 // When they are implemented, you can remove them
@@ -28,6 +30,45 @@ struct Table* retrieve(struct ParseTree* tree) {
   return NULL;
 }
 
+void testCreateTable(void) {
+
+  struct ParseTree* createDBCommand = createCreateDatabaseParseTree("foo");
+  createDatabase(createDBCommand);
+  assert(strcmp(currentDatabase, "foo") == 0, "currentDatabase should be set!");
+  char tableFolderPath[1000];
+
+  char names[FIELD_SIZE][NAME_LIMIT] = {
+    "name1",
+    "name2",
+    "name3",
+    "name4",
+  };
+
+  char values[FIELD_SIZE][VALUE_LIMIT] = {
+    "value1",
+    "value2",
+    "value3",
+    "value4",
+  };
+  struct Field* fields = createFieldList(names, values, 4);
+
+  struct ParseTree* createTableCmd = createCreateTableParseTree("bar", fields);
+  createTable(createTableCmd);
+  sprintf(tableFolderPath, "%s/foo/bar", DATABASE_DIR);
+  assert(access(tableFolderPath, F_OK) != -1, "Table file was not constructed!");
+
+  char fileContents[1000];
+  FILE* file = fopen(tableFolderPath, "r");
+  fgets(fileContents, 999, file);
+
+  assert(strcmp(fileContents, "name1|name2|name3|name4\n") == 0, "Table was not written correctly!");
+
+  // cleanup garbage
+  fclose(file);
+  destroyParseTree(createDBCommand);
+  destroyParseTree(createTableCmd);
+}
+
 void testParseGrammer(void) {
   struct ParseTree* parseTree = parseGrammer("SELECT id from table1");
 
@@ -38,6 +79,7 @@ void testParseGrammer(void) {
   assert(parseTree->updateFields == NULL, "UPDATE fields were not specified!");
   assert(parseTree->insertFields == NULL, "INSERT fields were not specified!");
   assert(parseTree->fields != NULL, "Field should not be null!");
+  assert(parseTree->fields+1 == NULL, "Field list should be NULL terminated!");
 }
 
 void testStore(void) {
@@ -73,6 +115,8 @@ void testRetrieve(void) {
  * This is just the main method!
  */
 int main(void) {
+  printf("===============Create Table:\n");
+  testCreateTable();
   printf("===============Example Table:\n");
 
   // create a table with 10 tuples.
@@ -92,8 +136,11 @@ int main(void) {
   getchar();
   printf("\n===============testStore\n");
   testStore();
+<<<<<<< HEAD
 
   getchar();
+=======
+>>>>>>> refs/remotes/JonathanFrias/store
   printf("\n===============testRetrieve\n");
   testRetrieve();
 
