@@ -12,6 +12,8 @@
 #define FIELD_LIMIT 100 // max num of columns
 #define NAME_LIMIT 30 // Max length for user-provided names
 #define VALUE_LIMIT 50 // Max length for user-provided values
+#define HEADER_SIZE FIELD_LIMIT*(NAME_LIMIT+4) // +4 (1 delimeter, 3 type chars)
+#define RECORD_SIZE FIELD_LIMIT*(VALUE_LIMIT+1) // +1 for delimeter
 
 #define DATABASE_DIR "out/databases"
 
@@ -75,8 +77,6 @@ struct ParseTree {
   char* table; // name of table
   struct Field* fields;
   struct Where* whereConstraints;
-  struct Field* updateFields;
-  struct Field* insertFields;
 };
 
 struct Table {

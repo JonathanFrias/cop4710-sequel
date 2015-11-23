@@ -83,8 +83,6 @@ void testParseGrammer(void) {
   assert(parseTree->commandType == SELECT, "Command type should equal select!");
   assert(strcmp("table1", parseTree->table) == 0, "The table was not set propertly!");
   assert(parseTree->whereConstraints != NULL, "WhereConstraints should have been specified!");
-  assert(parseTree->updateFields == NULL, "UPDATE fields were not specified!");
-  assert(parseTree->insertFields == NULL, "INSERT fields were not specified!");
   assert(parseTree->fields != NULL, "Field should not be null!");
   assert(parseTree->fields+1 == NULL, "Field list should be NULL terminated!");
 }

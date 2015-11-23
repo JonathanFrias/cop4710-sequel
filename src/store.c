@@ -53,8 +53,8 @@ void createTable(struct ParseTree* parseTree) {
   int i = 0;
 
   struct Field* fields[FIELD_LIMIT];
-  char headerLine[FIELD_LIMIT*NAME_LIMIT+FIELD_LIMIT];
-  char tmpLine[FIELD_LIMIT*NAME_LIMIT+FIELD_LIMIT];
+  char headerLine[HEADER_SIZE];
+  char tmpLine[HEADER_SIZE];
   struct Field* providedFields = parseTree->fields;
 
   while((*(parseTree->fields+i)).name != NULL) {
