@@ -78,7 +78,7 @@ int main(void) {
   // create a table with 10 tuples.
   struct Table* table = createTable(10);
 
-  printf("%10s%10s\n", "EMP", "EMP#");
+  printf("%10s%10s\n", "EMP", "EMP#");    //should modify the structure to include an attribute list
   for (int i = 0; i < 10; i++)
 	  printf("%10s%10d\n", table->tuples[i].primaryKey->name, table->tuples[i].primaryKey->value);
   printf("\n");
