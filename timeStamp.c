@@ -4,7 +4,6 @@
 
 // includes
 #include "nick.h"
-#include <string.h>
 #include <time.h>
 
 // defines
