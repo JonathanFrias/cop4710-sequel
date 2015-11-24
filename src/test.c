@@ -73,8 +73,7 @@ void testCreateTable(void) {
   fgets(fileContents, RECORD_SIZE, file);
 
   char* header = "name1[I]|name2[T]|name3[D]|name4[I]\n";
-  int offset = RECORD_SIZE - strlen(header) - 1;
-  assert(strcmp(fileContents+offset, header) == 0, "Table was not written correctly!");
+  assert(strcmp(fileContents, header) == 0, "Table was not written correctly!");
 
   // cleanup garbage
   fclose(file);
@@ -106,15 +105,17 @@ void testStore(void) {
   FieldType types[FIELD_SIZE][1] = { INTEGER, TEXT, DATE, INTEGER, };
 
   struct Field* fields = createFieldList(names, values, types, 4);
-  struct ParseTree* createTable = createCreateTableParseTree("table",
+  struct ParseTree* createTableCmd = createCreateTableParseTree("table",
       fields);
+  createTable(createTableCmd);
 
   // test
   struct ParseTree* insertCmd = createInsertParseTree("table", fields);
+  insertTuple(insertCmd);
 
   // teardown
   destroyParseTree(createDatabaseCommand);
-  destroyParseTree(createTable);
+  destroyParseTree(createTableCmd);
 }
 
 /*

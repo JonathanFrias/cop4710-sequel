@@ -130,6 +130,7 @@ struct ParseTree* createInsertParseTree(char* table, struct Field* fields) {
   struct ParseTree* command = malloc(sizeof(struct ParseTree));
   command->commandType = INSERT;
   command->fields = fields;
+  command->table = table;
 
   return command;
 }
@@ -149,3 +150,28 @@ void destroyParseTree(struct ParseTree* tree) {
   }
   return;
 }
+
+void insertTuple(struct ParseTree* cmd) {
+  assert(cmd->commandType == INSERT, "Incompatible command type to function insert");
+  assert(currentDatabase, "CurrentDatabase must be set!");
+  assert(cmd->table, "Table must be provied!");
+  char tablePath[1000];
+
+  snprintf(tablePath, sizeof(tablePath), "%s/%s/%s", DATABASE_DIR, currentDatabase, cmd->table);
+
+  FILE* file = fopen(tablePath, "a");
+
+  int i = 0;
+  while(cmd->fields[i].name != NULL) {
+    fputs((char*) cmd->fields[i].value, file);
+    if(cmd->fields[i+1].name != NULL) {
+      fputs("|", file);
+    }
+    i++;
+  }
+  fputs("\n", file);
+
+  fclose(file);
+  return;
+}
+
