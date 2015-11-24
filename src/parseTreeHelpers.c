@@ -100,6 +100,40 @@ struct ParseTree* createCreateTableParseTree(char* table,
   return tree;
 }
 
+struct Tuple* createTuple(struct Field* fields) {
+  struct Tuple* result = malloc(sizeof(struct Tuple));
+
+  if(fields) {
+    result->fields = fields;
+  } else {
+    result->fields = createField("createTuple", "createValue1");
+  }
+
+  return result;
+}
+
+struct Tuple* createTupleList(struct Field* fields, int count) {
+  struct Tuple* results = calloc(count+1, sizeof(struct Tuple));
+
+  for(int i = 0; i < count; i++) {
+    if(fields) {
+      results[i].fields = fields;
+    } else {
+      results[i].fields = createField("createTuple", "createValue1");
+    }
+  }
+
+  return results;
+}
+
+struct ParseTree* createInsertParseTree(char* table, struct Field* fields) {
+  struct ParseTree* command = malloc(sizeof(struct ParseTree));
+  command->commandType = INSERT;
+  command->fields = fields;
+
+  return command;
+}
+
 void destroyParseTree(struct ParseTree* tree) {
 
   assert(tree, "Cannot destroy invalid tree");

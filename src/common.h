@@ -87,11 +87,10 @@ struct Table {
 struct ParseTree* parseGrammer(char* sql);
 
 // Store/Retrieve
-
-bool storeTuple(struct Tuple* tuples, int count);
-bool storeTable(struct Table* table);
+bool store(struct ParseTree* tuples);
 
 struct Table* retrieve(struct ParseTree* tree); // Tuple list returned must be NULL terminated.
+
 void createDatabase(struct ParseTree* createCommand);
 void createTable(struct ParseTree* parseTree);
 void setDatabase(char*);

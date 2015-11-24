@@ -18,7 +18,7 @@ struct ParseTree* parseGrammer(char* sql) {
   return NULL;
 }
 
-bool storeTuples(struct Tuple* tuples, int count) {
+bool storeTuples(char* table, struct Tuple* tuples, int count) {
   return false;
 }
 
@@ -30,6 +30,25 @@ struct Table* retrieve(struct ParseTree* tree) {
   return NULL;
 }
 
+/*
+ * This is just the main method!
+ */
+int main(void) {
+  printf("===============Create Table:\n");
+  testCreateTable();
+  printf("===============Example Table:\n");
+
+  // create a table with 10 tuples.
+  struct Table* table = createExampleTable(10);
+  printTable(table);
+
+  printf("\n===============testStore\n");
+  testStore();
+  printf("\n===============testParseGrammer\n");
+  testParseGrammer();
+  return 0;
+}
+
 void testCreateTable(void) {
 
   struct ParseTree* createDBCommand = createCreateDatabaseParseTree("foo");
@@ -37,26 +56,11 @@ void testCreateTable(void) {
   assert(strcmp(currentDatabase, "foo") == 0, "currentDatabase should be set!");
   char tableFolderPath[1000];
 
-  char names[FIELD_SIZE][NAME_LIMIT] = {
-    "name1",
-    "name2",
-    "name3",
-    "name4",
-  };
+  char names[FIELD_SIZE][NAME_LIMIT] = { "name1", "name2", "name3", "name4", };
 
-  char values[FIELD_SIZE][VALUE_LIMIT] = {
-    "1",
-    "value2",
-    "1/1/2015",
-    "3",
-  };
+  char values[FIELD_SIZE][VALUE_LIMIT] = { "1", "value2", "1/1/2015", "3", };
 
-  FieldType types[FIELD_SIZE][1] = {
-    INTEGER,
-    TEXT,
-    DATE,
-    INTEGER,
-  };
+  FieldType types[FIELD_SIZE][1] = { INTEGER, TEXT, DATE, INTEGER, };
   struct Field* fields = createFieldList(names, values, types, 4);
 
   struct ParseTree* createTableCmd = createCreateTableParseTree("bar", fields);
@@ -90,54 +94,27 @@ void testParseGrammer(void) {
 }
 
 void testStore(void) {
-  struct Table* table = createExampleTable(10);
 
-  bool res = storeTuples(table->tuples, 10);
-  assert(res, "storeTuples function did not report success!");
-
-  bool res2 = storeTable(table);
-  assert(res, "storeTable function did not report success!");
-}
-
-void testRetrieve(void) {
   // setup
-  struct Table* table = createExampleTable(10);
-  bool res = storeTuples(table->tuples, 10);
+  struct ParseTree* createDatabaseCommand = createCreateDatabaseParseTree("test_store");
+  createDatabase(createDatabaseCommand);
 
-  //test
-  char sql[100];
-  sprintf(sql, "select * from %s;\n", table->name);
+  char names[FIELD_SIZE][NAME_LIMIT] = { "name1", "name2", "name3", "name4", };
 
-  struct ParseTree* parseTree = parseGrammer(sql);
+  char values[FIELD_SIZE][VALUE_LIMIT] = { "1", "value2", "1/1/2015", "3", };
 
-  struct Table* results = retrieve(parseTree);
-  assert(results != 0, "retrieve operation returned a null pointer!");
-  assert(results->count == table->count, "All records not stored correctly!");
+  FieldType types[FIELD_SIZE][1] = { INTEGER, TEXT, DATE, INTEGER, };
 
-  //teardown
-  destroyExampleTable(table);
-}
+  struct Field* fields = createFieldList(names, values, types, 4);
+  struct ParseTree* createTable = createCreateTableParseTree("table",
+      fields);
 
-/*
- * This is just the main method!
- */
-int main(void) {
-  printf("===============Create Table:\n");
-  testCreateTable();
-  printf("===============Example Table:\n");
+  // test
+  struct ParseTree* insertCmd = createInsertParseTree("table", fields);
 
-  // create a table with 10 tuples.
-  struct Table* table = createExampleTable(10);
-  printTable(table);
-  destroyExampleTable(table);
-
-  printf("\n===============testStore\n");
-  testStore();
-  printf("\n===============testRetrieve\n");
-  testRetrieve();
-  printf("\n===============testParseGrammer\n");
-  testParseGrammer();
-  return 0;
+  // teardown
+  destroyParseTree(createDatabaseCommand);
+  destroyParseTree(createTable);
 }
 
 /*
@@ -182,20 +159,4 @@ void printTable(struct Table* table) {
     printf("%s\n", table->tuples[i].primaryKey->value);
   }
   return;
-}
-
-/*
- * Cleanup allocated memory from a table.
- */
-bool destroyExampleTable(struct Table* table) {
-  for(int i = 0; i < table->count; i++) {
-    printf("%s\n", table->tuples[i].primaryKey->name);
-    printf("%s\n", table->tuples[i].primaryKey->value);
-    free(table->tuples[i].primaryKey->name);
-    free(table->tuples[i].primaryKey->value);
-    free(table->tuples[i].primaryKey);
-  }
-  free(table->tuples);
-  free(table);
-  return true;
 }

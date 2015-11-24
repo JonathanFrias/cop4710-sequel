@@ -102,3 +102,4 @@ void computePadding(char* input, char* result, int size) {
   // The +1 is to count the '\0'
   assert(strlen(result)+1 == size, "Record size is not correct!");
 }
+
