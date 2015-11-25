@@ -121,7 +121,6 @@ COMP                    : LT
 %%
 
 
-#include "lex.yy.c"
 main()
 {
    yyparse();
