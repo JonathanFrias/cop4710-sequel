@@ -57,11 +57,11 @@ COMPARE -> >
 		 | == 
 		 | !=
 FIELD_TYPE -> integer
-		    | integer ( LITERAL )
-			| number ( LITERAL )
-			| number ( LITERAL , LITERAL )
+		    | integer ( INT )
+			| number ( INT )
+			| number ( INT , INT )
 			| number
-			| character( LITERAL )
+			| character( INT )
 			| date 
 LITERAL -> NUM
 		| DEC
