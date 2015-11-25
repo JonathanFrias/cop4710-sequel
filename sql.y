@@ -1,5 +1,6 @@
 %{ 
 #define YYSTYPE char*
+#include <stdio.h>
 %}
 
 %start START
@@ -26,7 +27,11 @@ SYSTEM_COMMAND : CREATE_DATABASE_COMMAND
                | DROP_DATABASE_COMMAND
                | SAVE_COMMAND
                | LOAD_DATABASE_COMMAND
+
                
+DDL_COMMAND    : CREATE_TABLE_COMMAND
+               | DROP_TABLE_COMMAND
+
 DDL_COMMAND    : CREATE_TABLE_COMMAND
                | DROP_TABLE_COMMAND
 
@@ -62,7 +67,8 @@ UPDATE_COMMAND          : UPDATE ID SET ID '=' LITERAL UPDATE_COMMAND2
 UPDATE_COMMAND2         : ',' ID '=' LITERAL UPDATE_COMMAND2      
                         | UPDATE_COMMAND3
 
-UPDATE_COMMAND3         : WHERE CONDITION ';' | ';'
+UPDATE_COMMAND3         : WHERE CONDITION ';' 
+			| ';'
 
 SELECT_COMMAND          : SELECT '*' FROM ID ';'
 
@@ -92,6 +98,7 @@ FIELD_TYPE              : INTEGER '(' INT ')'
                         | NUMBER '(' INT ',' INT ')'
                         | NUMBER
                         | CHARACTER '(' INT ')'
+                        | DATE
 
 LITERAL_LIST            : LITERAL LITERAL_LIST2
 
