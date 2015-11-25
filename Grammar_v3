@@ -65,7 +65,7 @@ FIELD_TYPE -> integer
 			| date 
 LITERAL -> NUM
 		| DEC
-		| DATES
+		| DATETYPE
 		| INT
 		| STR
 
