@@ -5,7 +5,6 @@
 Delimiter    [ \t]
 WhiteSpace   {Delimiter}+
 Letter       [A-Za-z]
-Name 	     [A-Za-z][A-Za-z0-9_]*
 Digit        [0-9]
 Integer      {Digit}+
 Float        {Digit}+"."{Digit}+
@@ -14,7 +13,7 @@ Other	     [-!@#$%&+:"~`]
 
 
 %%
-{WhiteSpace}				                     { ; }
+{WhiteSpace}				 { ; }
 [Cc][Rr][Ee][Aa][Tt][Ee]                 {printf("token: CREATE\n");return(CREATE);}
 [Dd][Rr][Oo][Pp]                         {printf("token: DROP\n");return(DROP);}
 [Ll][Oo][Aa][Dd]                         {printf("token: LOAD\n");return(LOAD);}
@@ -35,25 +34,25 @@ Other	     [-!@#$%&+:"~`]
 [Nn][Uu][Mm][Bb][Ee][Rr]                 {printf("token: NUMBER\n");return(NUMBER);}
 [Cc][Hh][Aa][Rr][Aa][Cc][Tt][Ee][Rr]     {printf("token: CHARACTER\n");return(CHARACTER);}
 [Dd][Aa][Tt][Ee]			                   {printf("token: DATE\n");return(DATE);}
-{Name}			             {printf("token: ID %s\n", yytext);return(ID);}
-"*"                      {printf("token: *\n");return('*');}
-"("                      {printf("token: (\n");return('(');}
-")"                      {printf("token: )\n");return(')');}
-","                      {printf("token: ,\n");return(',');}
+[a-zA-Z][a-zA-Z0-9_]*		 {printf("token: ID %s\n", yytext);return(ID);}
+"*"                      {printf("token: AST\n");return(AST);}
+"("                      {printf("token: RP\n");return(LP);}
+")"                      {printf("token: LP\n");return(RP);}
+","                      {printf("token: COMMA\n");return(COMMA);}
 "<"                      {printf("token: LT\n");return(LT);}
 ">"                      {printf("token: GT\n");return(GT);}
 "<="                     {printf("token: LTEQ\n");return(LTEQ);}
 ">="                     {printf("token: GTEQ\n");return(GTEQ);}
 "=="			               {printf("token: EQEQ\n");return(EQEQ);}
 "!="			               {printf("token: NOTEQ\n");return(NOTEQ);}
-";"                      {printf("token: ;\n");return(';');}
+";"                      {printf("token: SEMIC\n");return(SEMIC);}
+"="			                 {printf("token: EQ\n");return(EQ);}
 {Float}                  {printf("token: DEC\n");return(DEC);}
 "-"{Float}               {printf("token: DEC\n");return(DEC);}
 {Integer}                {printf("token: INT\n");return(INT);}
 "-"{Integer}             {printf("token: INT\n");return(INT);}
 "'"[ \ta-zA-Z0-9]+"'"    {printf("token: STR\n");return(STR);}
 {Date}		               {printf("token: DATETYPE\n");return(DATETYPE);}
-\n			 { ; } 
-.	                 {printf("Character %s not tokenized\n", yytext);exit(0)
-;}
-
+\n			                 { ; } 
+.	                       {printf("Character %s not tokenized\n", yytext);exit(0);}
+%%
