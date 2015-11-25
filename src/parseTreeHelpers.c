@@ -26,7 +26,10 @@ struct Field* createFieldList(char* names, char* values, FieldType types[FIELD_S
   struct Field* fieldList = calloc(count+1, FIELD_SIZE);
   for(int i = 0; i < count; i++) {
     (fieldList+i)->name = (names+(i*NAME_LIMIT));
-    (fieldList+i)->value = (values+(i*VALUE_LIMIT));
+
+    if(values) {
+      (fieldList+i)->value = (values+(i*VALUE_LIMIT));
+    }
     (fieldList+i)->fieldType = types[i][0];
   }
 

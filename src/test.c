@@ -5,10 +5,10 @@
 struct Table* createExampleTable(int count);
 bool destroyExampleTable(struct Table*);
 void testStore(void);
-void testRetrieve(void);
 void testParseGrammer(void);
 void printTable(struct Table* table);
 void testCreateTable(void);
+void testRetrieve(void);
 
 // The following method stubs are not implemented!
 // When they are implemented, you can remove them
@@ -26,10 +26,6 @@ bool storeTable(struct Table* table) {
   return false;
 }
 
-struct Table* retrieve(struct ParseTree* tree) {
-  return NULL;
-}
-
 /*
  * This is just the main method!
  */
@@ -44,9 +40,27 @@ int main(void) {
 
   printf("\n===============testStore\n");
   testStore();
+
+  printf("\n===============testRetrieve\n");
+  testRetrieve();
+
   printf("\n===============testParseGrammer\n");
   testParseGrammer();
   return 0;
+}
+
+void testRetrieve(void) {
+  // This depends on testStore being run. because reasons!
+
+  char names[FIELD_SIZE][NAME_LIMIT] = { "name4", "name2", "name3", "name1", };
+  FieldType types[FIELD_SIZE][1] = { INTEGER, TEXT, DATE, INTEGER, };
+  struct Field* projection = createFieldList(names, NULL, types, 4);
+  struct ParseTree* selectCmd = createSelectParseTree("table", projection, NULL);
+
+  struct Table* results = retrieve(selectCmd);
+
+  assert(results->count == 1, "Did not retrieve correct number of records");
+  assert(strcmp(results->name, "") == 0, "Table name was not set in the resultset");
 }
 
 void testCreateTable(void) {

@@ -6,12 +6,12 @@ COMPILE_DIR := out
 # compile the entire codebase.
 all:
 	mkdir -p $(COMPILE_DIR)
-	cc src/sql.c src/assert.c src/store.c src/parseTreeHelpers.c -g -std=gnu99 -o $(COMPILE_DIR)/sql
+	cc src/sql.c   src/assert.c src/store.c src/parseTreeHelpers.c src/retrieve.c -g -std=gnu99 -o $(COMPILE_DIR)/sql
 
 # Run this with 'make test', then './out/test'
 test: src/test.c
 	mkdir -p $(COMPILE_DIR)
-	cc src/test.c src/assert.c src/store.c src/parseTreeHelpers.c -g -std=gnu99 -o $(COMPILE_DIR)/test
+	cc src/test.c src/assert.c src/store.c src/parseTreeHelpers.c src/retrieve.c  -g -std=gnu99 -o $(COMPILE_DIR)/test
 
 clean:
 	rm -rf out

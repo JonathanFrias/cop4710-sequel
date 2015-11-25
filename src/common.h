@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <unistd.h>
+#include <time.h>
 #include "assert.h"
 
 #define PARSETREE_SIZE sizeof(struct ParseTree)
@@ -94,4 +95,5 @@ struct Table* retrieve(struct ParseTree* tree); // Tuple list returned must be N
 void createDatabase(struct ParseTree* createCommand);
 void createTable(struct ParseTree* parseTree);
 void setDatabase(char*);
-void computePadding(char* input, char* result, int max);
+void computePadding(char*, char*, int);
+int getRecordCount(FILE* file);
