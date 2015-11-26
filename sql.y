@@ -1,7 +1,12 @@
 %{ 
 #define YYSTYPE char*
 #include <stdio.h>
+#include "lexer.h"
 %}
+
+%pure-parser 
+%lex-param {void * scanner}
+%parse-param {void * scanner}
 
 %start START
 %token ID 
@@ -117,15 +122,11 @@ COMP                    : LT
 %%
 
 
-main()
-{
-   yyparse();
-}
 yyerror()
 {
    printf("REJECT\n");
 }
-yywrap()
+yywrap(scanner)
 {
    printf("ACCEPT\n");
 
