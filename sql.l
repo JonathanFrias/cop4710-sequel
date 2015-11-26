@@ -2,6 +2,10 @@
 #include "sql.tab.h"
 %}
 
+%option noyywrap
+%option reentrant
+%option bison-bridge
+
 Delimiter    [ \t]
 WhiteSpace   {Delimiter}+
 Letter       [A-Za-z]
@@ -24,7 +28,7 @@ Other	     [-!@#$%&+:"~`]
 [Ii][Nn][Tt][Oo]                         {printf("token: INTO\n");return(INTO);}
 [Ff][Rr][Oo][Mm]                         {printf("token: FROM\n");return(FROM);}
 [Ww][Hh][Ee][Rr][Ee]                     {printf("token: WHERE\n");return(WHERE);}
-[Ss][Ee][Tt]                    	       {printf("token: SET\n");return(SET);}
+[Ss][Ee][Tt]                    	 {printf("token: SET\n");return(SET);}
 [Dd][Ee][Ll][Ee][Tt][Ee]                 {printf("token: DELETE\n");return(DELETE);}
 [Uu][Pp][Dd][Aa][Tt][Ee]                 {printf("token: UPDATE\n");return(UPDATE);}
 [Ss][Ee][Ll][Ee][Cc][Tt]                 {printf("token: SELECT\n");return(SELECT);}
@@ -33,8 +37,8 @@ Other	     [-!@#$%&+:"~`]
 [Ii][Nn][Tt][Ee][Gg][Ee][Rr]             {printf("token: INTEGER\n");return(INTEGER);}
 [Nn][Uu][Mm][Bb][Ee][Rr]                 {printf("token: NUMBER\n");return(NUMBER);}
 [Cc][Hh][Aa][Rr][Aa][Cc][Tt][Ee][Rr]     {printf("token: CHARACTER\n");return(CHARACTER);}
-[Dd][Aa][Tt][Ee]			                   {printf("token: DATE\n");return(DATE);}
-[a-zA-Z][a-zA-Z0-9_]*		 {printf("token: ID %s\n", yytext);return(ID);}
+[Dd][Aa][Tt][Ee]			 {printf("token: DATE\n");return(DATE);}
+[a-zA-Z][a-zA-Z0-9_]*			 {printf("token: ID %s\n", yytext);return(ID);}
 "*"                      {printf("token: AST\n");return(AST);}
 "("                      {printf("token: RP\n");return(LP);}
 ")"                      {printf("token: LP\n");return(RP);}
@@ -43,16 +47,16 @@ Other	     [-!@#$%&+:"~`]
 ">"                      {printf("token: GT\n");return(GT);}
 "<="                     {printf("token: LTEQ\n");return(LTEQ);}
 ">="                     {printf("token: GTEQ\n");return(GTEQ);}
-"=="			               {printf("token: EQEQ\n");return(EQEQ);}
-"!="			               {printf("token: NOTEQ\n");return(NOTEQ);}
+"=="			 {printf("token: EQEQ\n");return(EQEQ);}
+"!="			 {printf("token: NOTEQ\n");return(NOTEQ);}
 ";"                      {printf("token: SEMIC\n");return(SEMIC);}
-"="			                 {printf("token: EQ\n");return(EQ);}
+"="			 {printf("token: EQ\n");return(EQ);}
 {Float}                  {printf("token: DEC\n");return(DEC);}
 "-"{Float}               {printf("token: DEC\n");return(DEC);}
-{Integer}                {printf("token: INT\n");return(INT);}
-"-"{Integer}             {printf("token: INT\n");return(INT);}
-"'"[ \ta-zA-Z0-9]+"'"    {printf("token: STR\n");return(STR);}
-{Date}		               {printf("token: DATETYPE\n");return(DATETYPE);}
-\n			                 { ; } 
-.	                       {printf("Character %s not tokenized\n", yytext);exit(0);}
+{Integer}                 {printf("token: INT\n");return(INT);}
+"-"{Integer}              {printf("token: INT\n");return(INT);}
+"'"[ \ta-zA-Z0-9]+"'"   {printf("token: STR\n");return(STR);}
+{Date}		         {printf("token: DATETYPE\n");return(DATETYPE);}
+\n			 { ; } 
+.	                 {printf("Character %s not tokenized\n", yytext);exit(0);}
 %%
