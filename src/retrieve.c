@@ -4,9 +4,7 @@ struct Table* retrieve(struct ParseTree* command) {
 
   // get table location
   char tablePath[1000];
-  char fields[FIELD_LIMIT*FIELD_SIZE];
   int fieldCount = 0;
-  struct Table* result = malloc(sizeof(struct Table));
 
   snprintf(tablePath, sizeof(tablePath), "%s/%s/%s", DATABASE_DIR, currentDatabase, command->table);
 
@@ -14,7 +12,6 @@ struct Table* retrieve(struct ParseTree* command) {
   // each line is a new record
   FILE* file = fopen(tablePath, "r");
   int recordCount = getRecordCount(file);
-  struct Tuple* tuples = malloc(sizeof(struct Tuple)*recordCount);
 
   char buffer[FIELD_LIMIT*VALUE_LIMIT];
   fgets(buffer, sizeof(buffer), file);
@@ -22,7 +19,9 @@ struct Table* retrieve(struct ParseTree* command) {
   fieldCount = getFieldCount(buffer, sizeof(buffer));
   char* fieldName = strtok(buffer, "|");
 
-  struct Field* recordFields = malloc(sizeof(struct Field)*fieldCount*recordCount);
+  struct Field* recordFields = malloc(sizeof(struct Field)*fieldCount*recordCount*2+recordCount);
+
+  struct Tuple* tuples = malloc(sizeof(struct Tuple)*recordCount);
 
   int i = 0;
   // This loops though the header lines of the table
@@ -44,7 +43,7 @@ struct Table* retrieve(struct ParseTree* command) {
 
   // Now loop through the actual records.
   int currentRecord = 1; // 1 is for header offset
-
+  int tupleCount = 0;
   while(fgets(buffer, sizeof(buffer), file)) {
     int currentField = 0;
     char* value = strtok(buffer, "|");
@@ -53,16 +52,23 @@ struct Table* retrieve(struct ParseTree* command) {
       char* valueStorage = malloc(VALUE_LIMIT);
       snprintf(valueStorage, VALUE_LIMIT, "%s", buffer);
 
+      printf("%d\n", fieldIndex);
       (recordFields+fieldIndex)->name = (recordFields+currentField)->name;
       (recordFields+fieldIndex)->fieldType = (recordFields+currentField)->fieldType;
       (recordFields+fieldIndex)->value = valueStorage;
       currentField++;
     } while((value = strtok(NULL, "|")) != NULL);
     currentField++;
-    currentRecord += 2;
+    tuples[tupleCount].fields = &(recordFields[fieldCount*currentRecord]);
+    currentRecord+=2;
+    tupleCount++;
   }
+  struct Table* table = malloc(sizeof(struct Table));
+  table->tuples = tuples;
+  table->count = recordCount;
+  snprintf(table->name, sizeof(table->name), "%s", command->table);
   fclose(file);
-  return result;
+  return table;
 }
 
 int getFieldCount(char* buffer, int size) {
@@ -88,5 +94,5 @@ int getRecordCount(FILE* file) {
     }
   }
   rewind(file);
-  return lines;
+  return lines-1;
 }

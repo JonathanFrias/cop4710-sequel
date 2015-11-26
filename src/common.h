@@ -82,7 +82,7 @@ struct ParseTree {
 struct Table {
   struct Tuple* tuples;
   int count;
-  char* name;
+  char name[NAME_LIMIT];
 };
 
 struct ParseTree* parseGrammer(char* sql);

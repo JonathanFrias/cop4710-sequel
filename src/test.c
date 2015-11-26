@@ -59,7 +59,7 @@ void testRetrieve(void) {
 
   struct Table* results = retrieve(selectCmd);
 
-  assert(results->count == 1, "Did not retrieve correct number of records");
+  assert(results->count == 2, "Did not retrieve correct number of records");
   assert(strcmp(results->name, "") == 0, "Table name was not set in the resultset");
 }
 
@@ -165,7 +165,7 @@ struct Table* createExampleTable(int count) {
   struct Table* table = (struct Table*) malloc(sizeof(struct Table));
   table->tuples = tuples;
   table->count = count;
-  table->name = "exampleTable";
+  snprintf(table->name, sizeof(table->name), "exampleTable");
   return table;
 }
 
