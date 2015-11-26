@@ -33,9 +33,6 @@ int main(void) {
   testCreateTable();
   printf("===============Example Table:\n");
 
-  // create a table with 10 tuples.
-  struct Table* table = createExampleTable(10);
-
   printf("\n===============testStore\n");
   testStore();
 
@@ -58,7 +55,33 @@ void testRetrieve(void) {
   struct Table* results = retrieve(selectCmd);
 
   assert(results->count == 2, "Did not retrieve correct number of records");
-  assert(strcmp(results->name, "") == 0, "Table name was not set in the resultset");
+  assert(strcmp(results->name, "table") == 0, "Table name was not set in the resultset");
+
+  assert(strcmp(results->tuples[0].fields[0].name, "name1") == 0 , "Problem with resultset");
+  assert(strcmp(results->tuples[0].fields[1].name, "name2") == 0 , "Problem with resultset");
+  assert(strcmp(results->tuples[0].fields[2].name, "name3") == 0 , "Problem with resultset");
+  assert(strcmp(results->tuples[0].fields[3].name, "name4") == 0 , "Problem with resultset");
+  assert(results->tuples[0].fields[4].name == 0 , "Problem with resultset"); // make sure null terminated
+
+  assert(strcmp((char*) results->tuples[0].fields[0].value, "1") == 0 , "Problem with resultset");
+  assert(strcmp((char*) results->tuples[0].fields[1].value, "value2") == 0 , "Problem with resultset");
+  assert(strcmp((char*) results->tuples[0].fields[2].value, "1/1/2015") == 0 , "Problem with resultset");
+  assert(strcmp((char*) results->tuples[0].fields[3].value, "3") == 0 , "Problem with resultset");
+  assert(results->tuples[0].fields[4].name == 0 , "Problem with resultset");
+
+
+  assert(strcmp(results->tuples[1].fields[0].name, "name1") == 0 , "Problem with resultset");
+  assert(strcmp(results->tuples[1].fields[1].name, "name2") == 0 , "Problem with resultset");
+  assert(strcmp(results->tuples[1].fields[2].name, "name3") == 0 , "Problem with resultset");
+  assert(strcmp(results->tuples[1].fields[3].name, "name4") == 0 , "Problem with resultset");
+  assert(results->tuples[1].fields[4].name == 0 , "Problem with resultset"); // make sure null terminated
+
+  assert(strcmp((char*) results->tuples[1].fields[0].value, "1") == 0 , "Problem with resultset");
+  assert(strcmp((char*) results->tuples[1].fields[1].value, "value2") == 0 , "Problem with resultset");
+  assert(strcmp((char*) results->tuples[1].fields[2].value, "1/1/2015") == 0 , "Problem with resultset");
+  assert(strcmp((char*) results->tuples[1].fields[3].value, "3") == 0 , "Problem with resultset");
+  assert(results->tuples[1].fields[4].name == 0 , "Problem with resultset");
+
 }
 
 void testCreateTable(void) {

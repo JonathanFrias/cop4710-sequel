@@ -45,12 +45,15 @@ struct Table* retrieve(struct ParseTree* command) {
   int currentRecord = 1; // 1 is for header offset
   int tupleCount = 0;
   while(fgets(buffer, sizeof(buffer), file)) {
+    // discard newline
+    buffer[strlen(buffer)-1] = '\0';
+
     int currentField = 0;
     char* value = strtok(buffer, "|");
     do {
       int fieldIndex = fieldCount*currentRecord+currentField;
       char* valueStorage = malloc(VALUE_LIMIT);
-      snprintf(valueStorage, VALUE_LIMIT, "%s", buffer);
+      snprintf(valueStorage, VALUE_LIMIT, "%s", value);
 
       (recordFields+fieldIndex)->name = (recordFields+currentField)->name;
       (recordFields+fieldIndex)->fieldType = (recordFields+currentField)->fieldType;
