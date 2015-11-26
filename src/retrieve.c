@@ -2,22 +2,72 @@
 
 struct Table* retrieve(struct ParseTree* command) {
 
+  // get table location
   char tablePath[1000];
   char fields[FIELD_LIMIT*FIELD_SIZE];
   int fieldCount = 0;
+  struct Table* result = malloc(sizeof(struct Table));
 
   snprintf(tablePath, sizeof(tablePath), "%s/%s/%s", DATABASE_DIR, currentDatabase, command->table);
-  FILE* file = fopen(tablePath, "r");
 
-  int records = getRecordCount(file);
-  struct Tuple* tuples = malloc(sizeof(struct Tuple)*records);
+  // open file and get record count
+  // each line is a new record
+  FILE* file = fopen(tablePath, "r");
+  int recordCount = getRecordCount(file);
+  struct Tuple* tuples = malloc(sizeof(struct Tuple)*recordCount);
 
   char buffer[FIELD_LIMIT*VALUE_LIMIT];
   fgets(buffer, sizeof(buffer), file);
 
+  fieldCount = getFieldCount(buffer, sizeof(buffer));
   char* fieldName = strtok(buffer, "|");
 
-  for(int i = 0; i < sizeof(buffer); i++) {
+  struct Field* recordFields = malloc(sizeof(struct Field)*fieldCount*recordCount);
+
+  int i = 0;
+  // This loops though the header lines of the table
+  do {
+    char type = fieldName[strlen(fieldName)-2];
+    if(type == ']') {
+      type = fieldName[strlen(fieldName)-3];
+      fieldName[strlen(fieldName)-4] = '\0';
+    } else {
+      fieldName[strlen(fieldName)-3] = '\0';
+    }
+
+    char* name = malloc(NAME_LIMIT);
+    snprintf(name, NAME_LIMIT, "%s", fieldName);
+    (recordFields+i)->name = name;
+    (recordFields+i)->fieldType = type;
+    i++;
+  } while((fieldName = strtok(NULL, "|")) != NULL);
+
+  // Now loop through the actual records.
+  int currentRecord = 1; // 1 is for header offset
+
+  while(fgets(buffer, sizeof(buffer), file)) {
+    int currentField = 0;
+    char* value = strtok(buffer, "|");
+    do {
+      int fieldIndex = fieldCount*currentRecord+currentField;
+      char* valueStorage = malloc(VALUE_LIMIT);
+      snprintf(valueStorage, VALUE_LIMIT, "%s", buffer);
+
+      (recordFields+fieldIndex)->name = (recordFields+currentField)->name;
+      (recordFields+fieldIndex)->fieldType = (recordFields+currentField)->fieldType;
+      (recordFields+fieldIndex)->value = valueStorage;
+      currentField++;
+    } while((value = strtok(NULL, "|")) != NULL);
+    currentField++;
+    currentRecord += 2;
+  }
+  fclose(file);
+  return result;
+}
+
+int getFieldCount(char* buffer, int size) {
+  int fieldCount = 0;
+  for(int i = 0; i < size; i++) {
     if(buffer[i] == '|') {
       fieldCount++;
     }
@@ -25,27 +75,7 @@ struct Table* retrieve(struct ParseTree* command) {
       break;
     }
   }
-  fieldCount++;
-
-  struct Table* result = malloc(sizeof(struct Table));
-  struct Field* header = malloc(sizeof(struct Field)*fieldCount);
-
-  int i = 0;
-  while((fieldName = strtok(NULL, "|")) != NULL) {
-    char type = fieldName[strlen(fieldName)-2];
-    if(type == ']') {
-      type = fieldName[strlen(fieldName)-1];
-      fieldName[strlen(fieldName)-1] = '\0';
-    } else {
-      fieldName[strlen(fieldName)-1] = '\0';
-    }
-
-    (header+i)->name = fieldName;
-    (header+i)->fieldType = type;
-  }
-
-  fclose(file);
-  return result;
+  return ++fieldCount;
 }
 
 int getRecordCount(FILE* file) {

@@ -97,3 +97,4 @@ void createTable(struct ParseTree* parseTree);
 void setDatabase(char*);
 void computePadding(char*, char*, int);
 int getRecordCount(FILE* file);
+int getFieldCount(char* buffer, int size);

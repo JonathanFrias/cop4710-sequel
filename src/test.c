@@ -126,6 +126,7 @@ void testStore(void) {
   // test
   struct ParseTree* insertCmd = createInsertParseTree("table", fields);
   insertTuple(insertCmd);
+  insertTuple(insertCmd);
 
   // teardown
   destroyParseTree(createDatabaseCommand);
