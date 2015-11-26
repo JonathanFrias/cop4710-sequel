@@ -66,7 +66,7 @@ void testCreateTable(void) {
   struct ParseTree* createDBCommand = createCreateDatabaseParseTree("foo");
   createDatabase(createDBCommand);
   assert(strcmp(currentDatabase, "foo") == 0, "currentDatabase should be set!");
-  char tableFolderPath[1000];
+  char tableFolderPath[PATH_SIZE];
 
   char names[FIELD_SIZE][NAME_LIMIT] = { "name1", "name2", "name3", "name4", };
 

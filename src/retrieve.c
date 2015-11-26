@@ -3,7 +3,7 @@
 struct Table* retrieve(struct ParseTree* command) {
 
   // get table location
-  char tablePath[1000];
+  char tablePath[PATH_SIZE];
   int fieldCount = 0;
 
   snprintf(tablePath, sizeof(tablePath), "%s/%s/%s", DATABASE_DIR, currentDatabase, command->table);
@@ -52,7 +52,6 @@ struct Table* retrieve(struct ParseTree* command) {
       char* valueStorage = malloc(VALUE_LIMIT);
       snprintf(valueStorage, VALUE_LIMIT, "%s", buffer);
 
-      printf("%d\n", fieldIndex);
       (recordFields+fieldIndex)->name = (recordFields+currentField)->name;
       (recordFields+fieldIndex)->fieldType = (recordFields+currentField)->fieldType;
       (recordFields+fieldIndex)->value = valueStorage;

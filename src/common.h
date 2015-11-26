@@ -15,7 +15,7 @@
 #define VALUE_LIMIT 50 // Max length for user-provided values
 #define HEADER_SIZE FIELD_LIMIT*(NAME_LIMIT+4) // +4 (1 delimeter, 3 type chars)
 #define RECORD_SIZE FIELD_LIMIT*(VALUE_LIMIT+1) // +1 for delimeter
-
+#define PATH_SIZE 1000
 #define DATABASE_DIR "out/databases"
 
 // Defines what database we're currently working on

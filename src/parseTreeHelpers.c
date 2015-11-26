@@ -158,7 +158,7 @@ void insertTuple(struct ParseTree* cmd) {
   assert(cmd->commandType == INSERT, "Incompatible command type to function insert");
   assert(currentDatabase, "CurrentDatabase must be set!");
   assert(cmd->table, "Table must be provied!");
-  char tablePath[1000];
+  char tablePath[PATH_SIZE];
 
   snprintf(tablePath, sizeof(tablePath), "%s/%s/%s", DATABASE_DIR, currentDatabase, cmd->table);
 

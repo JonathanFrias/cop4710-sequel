@@ -46,7 +46,7 @@ void createTable(struct ParseTree* parseTree) {
   assert(currentDatabase, "Please select a database!");
 
   // Create a table file in the default database directory
-  char tablePath[1000];
+  char tablePath[PATH_SIZE];
   snprintf(tablePath, sizeof(tablePath), "%s/%s/%s", DATABASE_DIR, currentDatabase, parseTree->table);
   FILE* tableFile = fopen(tablePath, "w");
 
