@@ -17,6 +17,8 @@ struct Table* retrieve(struct ParseTree* command) {
   fgets(buffer, sizeof(buffer), file);
 
   fieldCount = getFieldCount(buffer, sizeof(buffer));
+  // discard newline
+  buffer[strlen(buffer)-1] = '\0';
   char* fieldName = strtok(buffer, "|");
 
   struct Field* recordFields = malloc(sizeof(struct Field)*fieldCount*recordCount*2+recordCount);
@@ -27,12 +29,7 @@ struct Table* retrieve(struct ParseTree* command) {
   // This loops though the header lines of the table
   do {
     char type = fieldName[strlen(fieldName)-2];
-    if(type == ']') {
-      type = fieldName[strlen(fieldName)-3];
-      fieldName[strlen(fieldName)-4] = '\0';
-    } else {
-      fieldName[strlen(fieldName)-3] = '\0';
-    }
+    fieldName[strlen(fieldName)-3] = '\0';
 
     char* name = malloc(NAME_LIMIT);
     snprintf(name, NAME_LIMIT, "%s", fieldName);
@@ -62,7 +59,7 @@ struct Table* retrieve(struct ParseTree* command) {
     } while((value = strtok(NULL, "|")) != NULL);
     currentField++;
     tuples[tupleCount].fields = &(recordFields[fieldCount*currentRecord]);
-    currentRecord+=2;
+    currentRecord+=2; // to force NULL delimited records!
     tupleCount++;
   }
   struct Table* table = malloc(sizeof(struct Table));
