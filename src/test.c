@@ -6,7 +6,6 @@ struct Table* createExampleTable(int count);
 bool destroyExampleTable(struct Table*);
 void testStore(void);
 void testParseGrammer(void);
-void printTable(struct Table* table);
 void testCreateTable(void);
 void testRetrieve(void);
 
@@ -36,7 +35,6 @@ int main(void) {
 
   // create a table with 10 tuples.
   struct Table* table = createExampleTable(10);
-  printTable(table);
 
   printf("\n===============testStore\n");
   testStore();
@@ -169,10 +167,3 @@ struct Table* createExampleTable(int count) {
   return table;
 }
 
-void printTable(struct Table* table) {
-  for(int i = 0; i < table->count; i++) {
-    printf("%s\n", table->tuples[i].primaryKey->name);
-    printf("%s\n", table->tuples[i].primaryKey->value);
-  }
-  return;
-}
