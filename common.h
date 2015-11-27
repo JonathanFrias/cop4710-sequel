@@ -1,5 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include "lexer.h"
+#include "sql.tab.h"
 
 #define PARSETREE_SIZE sizeof(struct ParseTree)
 #define FIELD_SIZE sizeof(struct Field)
