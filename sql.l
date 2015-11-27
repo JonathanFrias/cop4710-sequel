@@ -1,10 +1,13 @@
 %{
+#include <stdio.h>
 #include "sql.tab.h"
-%}
 
-%option noyywrap
-%option reentrant
-%option bison-bridge
+extern C2(void) {
+        int yylex(void);
+}
+int line_number = 1;
+
+%}
 
 Delimiter    [ \t]
 WhiteSpace   {Delimiter}+
@@ -58,5 +61,5 @@ Other	     [-!@#$%&+:"~`]
 "'"[ \ta-zA-Z0-9]+"'"   {printf("token: STR\n");return(STR);}
 {Date}		         {printf("token: DATETYPE\n");return(DATETYPE);}
 \n			 { ; } 
-.	                 {printf("Character %s not tokenized\n", yytext);exit(0);}
+.	                 {printf("Character %s not tokenized\n", yytext);return 0;}
 %%
