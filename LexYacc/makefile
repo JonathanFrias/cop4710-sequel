@@ -1,6 +1,8 @@
-SQL: SQL.tab.c lex.yy.c
-	cc SQL.tab.c -o SQL
-SQL.tab.c:SQL.y
-	bison SQL.y
-lex.yy.c: SQL.l
-	flex SQL.l
+SQL: sql.l sql.y test.c
+	bison -d sql.y 
+	flex --header-file="lexheader.h" sql.l 
+	gcc -o SQL sql.tab.c lex.yy.c sql.c 
+
+clean:
+
+	rm -rf *.o SQL
