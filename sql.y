@@ -1,12 +1,10 @@
 %{ 
-#define YYSTYPE char*
 #include <stdio.h>
-#include "lexer.h"
-%}
+#include <stdlib.h>
 
-%pure-parser 
-%lex-param {void * scanner}
-%parse-param {void * scanner}
+int intval;
+
+%}
 
 %start START
 %token ID 
@@ -18,12 +16,12 @@
 
 
 %%
-START          : COMMAND_LIST  {printf("START -> COMMAND_LIST\n");}
+START          : COMMAND_LIST  {printf("Query Accepted\n");}
                      
-COMMAND_LIST   : COMMAND COMMAND_LIST2 {printf("COMMAND_LIST -> COMMAND COMMAND_LIST2\n");}
+COMMAND_LIST   : COMMAND COMMAND_LIST2 
  
-COMMAND_LIST2  : COMMAND COMMAND_LIST2  {printf("COMMAND_LIST2 -> COMMAND COMMAND_LIST2\n");}
-	       | /* EMPTY */ {printf("COMMAND_LIST2 -> @\n");}
+COMMAND_LIST2  : COMMAND COMMAND_LIST2  
+	       | /* EMPTY */ 
 
 COMMAND        : SYSTEM_COMMAND 
 	       | DDL_COMMAND 
@@ -43,7 +41,7 @@ DML_COMMAND    : INSERT_INTO_COMMAND
                | SELECT_COMMAND
                | W_SELECT_COMMAND
 
-CREATE_DATABASE_COMMAND : CREATE DATABASE ID SEMIC
+CREATE_DATABASE_COMMAND : CREATE DATABASE ID SEMIC 
 
 DROP_DATABASE_COMMAND   : DROP DATABASE ID SEMIC
 
@@ -121,13 +119,13 @@ COMP                    : LT
 			| NOTEQ   
 %%
 
-
 yyerror()
 {
    printf("REJECT\n");
+   return 0;
 }
-yywrap(scanner)
+
+yywrap()
 {
-   printf("ACCEPT\n");
 
 }
