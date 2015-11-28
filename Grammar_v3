@@ -7,7 +7,6 @@ COMMAND -> SYSTEM_COMMAND
 	 | DML_COMMAND
 SYSTEM_COMMAND -> CREATE_DATABASE_COMMAND
 		| DROP_DATABASE_COMMAND
-		| COMMIT_COMMAND
 		| SAVE_COMMAND
 		| LOAD_DATABASE_COMMAND
 DDL_COMMAND -> CREATE_TABLE_COMMAND
@@ -15,7 +14,6 @@ DDL_COMMAND -> CREATE_TABLE_COMMAND
 DML_COMMAND -> INSERT_INTO_COMMAND
 	     | DELETE_FROM_COMMAND
 	     | UPDATE_COMMAND
-	     | W_UPDATE_COMMAND
 	     | SELECT_COMMAND
 	     | W_SELECT_COMMAND
 CREATE_DATABASE_COMMAND -> create database ID ;
@@ -44,7 +42,7 @@ w_SELECT_COMMAND3 -> where CONDITION ;
 FIELD_DEF_LIST -> FIELD_DEF FIELD_DEF_LIST2
 FIELD_DEF_LIST2 -> , FIELD_DEF FIELD_DEF_LIST2
 		 | @
-FIELD_DEF -> FIELD_TYPE ID
+FIELD_DEF -> ID FIELD_TYPE
 FIELD_LIST -> ID FIELD_LIST2
 FIELD_LIST2 -> , ID FIELD_LIST2
 	     | @
@@ -59,11 +57,17 @@ COMPARE -> >
 		 | == 
 		 | !=
 FIELD_TYPE -> integer
-		    | integer [ LITERAL ]
-			| number ( LITERAL )
-			| number ( LITERAL , LITERAL )
+		    | integer ( INT )
+			| number ( INT )
+			| number ( INT , INT )
 			| number
-			| character( LITERAL )
+			| character( INT )
+			| date 
+LITERAL -> NUM
+		| DEC
+		| DATETYPE
+		| INT
+		| STR
 
 
 // SEMANTICS ****************
@@ -73,15 +77,18 @@ FIELD_TYPE -> integer
 
 // SAVE is actually the command to exit the program. 
 
-// a LITERAL is an integer, decimal, or string. For the integers and decimals I'm not sure if
-// we should include negative numbers or not
+// a LITERAL is an integer, decimal, date or string. For the integers and decimals no negative
+// numbers are allowed
 
 // the system will automatically include the timestamp. No user entry
 
 // for the FIELD_TYPEs, the LITERALs in the parentheses need to be ints. For number, the first
 // LITERAL indicates the maximum number of digits to the left of the decimal and the second
 // LITERAL indicates the number of digits to the right of the decimal. For character and integer,
-// the LITERAL just indicates the maximum number of digits or characters the field will hold
+// the LITERAL just indicates the maximum number of digits or characters the field will hold. 
+// For the date field type, the first LITERAL has to be two digits between 01-12, the second 
+// literal has to be two digits between 01-31, and the third literal has two be exactly two or
+// four digits from 0000-9999 
 
 
 // Tokens ...
@@ -106,7 +113,6 @@ select
 wselect
 ID
 LITERAL
-=
 (
 )
 *
