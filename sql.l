@@ -65,11 +65,3 @@ Other	     [-!@#$%&+:"~`]
 .	                 {printf("Character %s not tokenized\n", yytext);return 0;}
 %%
 
-int yywrap(void) {
-
-}
-
-int yyparse(void) {
-  yylex();
-  return 0;
-}

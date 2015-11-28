@@ -2,6 +2,7 @@
 #include "out/sql.tab.h"
 
 
+struct Command* cmd;
 int main(void)     
 {
 	int i = 0;    

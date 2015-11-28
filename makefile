@@ -16,9 +16,21 @@ test: src/test.c
 
 clean:
 	rm -rf out/ sql.tab.h sql.tab.c lexer.h *.o  lex.yy.c trial
-parse:
-	mkdir -p $(COMPILE_DIR)
-	
+
+trial: lex.yy.o sql.tab.o sql.o
+	cc -o $(COMPILE_DIR)/trial $(COMPILE_DIR)/lex.yy.o $(COMPILE_DIR)/sql.tab.o $(COMPILE_DIR)/sql.o -std=gnu99
+
+sql.o: sql.c 
+	cc -c sql.c -o $(COMPILE_DIR)/sql.o
+
+sql.tab.o: sql.tab.c
+	cc -c $(COMPILE_DIR)/sql.tab.c -o $(COMPILE_DIR)/sql.tab.o
+
+sql.tab.c: sql.y
 	bison -d sql.y -b $(COMPILE_DIR)/sql
-	flex --header-file=$(COMPILE_DIR)/lexer.h --outfile=$(COMPILE_DIR)/lex.yy.c sql.l
-	cc -o $(COMPILE_DIR)/trial $(COMPILE_DIR)/lex.yy.c sql.c -std=gnu99  $(SRC_FIlES)
+
+lex.yy.o: lex.yy.c 
+	cc -c $(COMPILE_DIR)/lex.yy.c -o $(COMPILE_DIR)/lex.yy.o
+
+lex.yy.c: sql.l sql.tab.c
+	flex --header-file=$(COMPILE_DIR)/lexer.h --outfile=out/lex.yy.c  sql.l
