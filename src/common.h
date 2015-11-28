@@ -4,6 +4,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <time.h>
+#include "lexer.h"
 #include "assert.h"
 
 #define PARSETREE_SIZE sizeof(struct ParseTree)
