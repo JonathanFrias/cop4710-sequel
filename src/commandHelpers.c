@@ -1,6 +1,6 @@
 #include "common.h"
 
-struct Field* createField(char* name, char* value) {
+struct Field* createField(char* name, char* value, whereType type) {
 
   // MUST USE CALLOC, not MALLOC!
   struct Field* field = (struct Field*) calloc(2, sizeof(struct Field));
@@ -17,6 +17,7 @@ struct Field* createField(char* name, char* value) {
     field->value = "field_value";
   }
 
+  field->fieldType = type;
   return field;
 }
 
@@ -36,14 +37,16 @@ struct Field* createFieldList(char* names, char* values, FieldType types[FIELD_S
   return fieldList;
 }
 
-struct Where* createWhere(struct Field* field, whereCompare compareType) {
-  struct Where* whereCondition = malloc(WHERE_SIZE);
+struct Where* createWhere(struct Field* field, whereType compareType) {
+  struct Where* whereCondition = calloc(2, sizeof(struct Where));
 
   if(field) {
     whereCondition->field = field;
   } else {
-    whereCondition->field = createField("WhereCondname", "WhereCondValue");
+    whereCondition->field = createField("WhereCondname", "WhereCondValue", TEXT);
   }
+  whereCondition->target = field->value;
+  whereCondition->compareType = compareType;
   return whereCondition;
 }
 
@@ -61,8 +64,9 @@ struct Command* createSelectCommand(char* table, struct Field* projection, struc
   if(projection) {
     cmd->fields = projection;
   } else {
-    cmd->fields = createField("selectName", "selectVal");
+    cmd->fields = createField("selectName", "selectVal", TEXT);
   }
+  cmd->whereConstraints = whereConstraints;
 
   return cmd;
 }
@@ -82,7 +86,7 @@ struct Command* createWSelectCommand(char* table, struct Field* projection, stru
   if(projection) {
     cmd->fields = projection;
   } else {
-    cmd->fields = createField("selectName", "selectVal");
+    cmd->fields = createField("selectName", "selectVal", TEXT);
   }
   return cmd;
 }
@@ -109,7 +113,7 @@ struct Tuple* createTuple(struct Field* fields) {
   if(fields) {
     result->fields = fields;
   } else {
-    result->fields = createField("createTuple", "createValue1");
+    result->fields = createField("createTuple", "createValue1", TEXT);
   }
 
   return result;
@@ -122,7 +126,7 @@ struct Tuple* createTupleList(struct Field* fields, int count) {
     if(fields) {
       results[i].fields = fields;
     } else {
-      results[i].fields = createField("createTuple", "createValue1");
+      results[i].fields = createField("createTuple", "createValue1", TEXT);
     }
   }
 

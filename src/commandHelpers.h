@@ -3,7 +3,7 @@
  * sample valid Command structures with vales you can
  * override.
  */
-struct Where* createWhere(struct Field* fields, whereCompare compareType);
+struct Where* createWhere(struct Field* field, whereType compareType);
 struct Command* createWSelectCommand(char* table, struct Field* projection, struct Where* whereConstraints);
 struct Command* createSelectCommand(char* table, struct Field* fields, struct Where* whereConstraints);
 struct Command* createCreateDatabaseCommand(char* databaseName);
