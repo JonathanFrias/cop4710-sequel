@@ -47,60 +47,60 @@ struct Where* createWhere(struct Field* field, whereCompare compareType) {
   return whereCondition;
 }
 
-struct ParseTree* createSelectParseTree(char* table, struct Field* projection, struct Where* whereConstraints) {
-  struct ParseTree* tree = malloc(PARSETREE_SIZE);
+struct Command* createSelectCommand(char* table, struct Field* projection, struct Where* whereConstraints) {
+  struct Command* cmd = malloc(COMMAND_SIZE);
 
-  tree->commandType = SELECT;
+  cmd->commandType = SELECT;
 
   if(table) {
-    tree->table = table;
+    cmd->table = table;
   } else {
-    tree->table = "default_table";
+    cmd->table = "default_table";
   }
 
   if(projection) {
-    tree->fields = projection;
+    cmd->fields = projection;
   } else {
-    tree->fields = createField("selectName", "selectVal");
+    cmd->fields = createField("selectName", "selectVal");
   }
 
-  return tree;
+  return cmd;
 }
 
-struct ParseTree* createWSelectParseTree(char* table, struct Field* projection, struct Where* whereConstraints) {
+struct Command* createWSelectCommand(char* table, struct Field* projection, struct Where* whereConstraints) {
 
-  struct ParseTree* tree = malloc(PARSETREE_SIZE);
+  struct Command* cmd = malloc(COMMAND_SIZE);
 
-  tree->commandType = wSELECT;
+  cmd->commandType = wSELECT;
 
   if(table) {
-    tree->table = table;
+    cmd->table = table;
   } else {
-    tree->table = "default_table";
+    cmd->table = "default_table";
   }
 
   if(projection) {
-    tree->fields = projection;
+    cmd->fields = projection;
   } else {
-    tree->fields = createField("selectName", "selectVal");
+    cmd->fields = createField("selectName", "selectVal");
   }
-  return tree;
+  return cmd;
 }
 
-struct ParseTree* createCreateDatabaseParseTree(char* databaseName) {
-  struct ParseTree* tree = malloc(PARSETREE_SIZE);
-  tree->commandType = CREATE_DATABASE;
-  tree->table = databaseName;
-  return tree;
+struct Command* createCreateDatabaseCommand(char* databaseName) {
+  struct Command* cmd = malloc(COMMAND_SIZE);
+  cmd->commandType = CREATE_DATABASE;
+  cmd->table = databaseName;
+  return cmd;
 }
 
-struct ParseTree* createCreateTableParseTree(char* table,
+struct Command* createCreateTableCommand(char* table,
     struct Field* fields) {
-  struct ParseTree* tree = malloc(PARSETREE_SIZE);
-  tree->commandType = CREATE_TABLE;
-  tree->fields = fields;
-  tree->table = table;
-  return tree;
+  struct Command* cmd = malloc(COMMAND_SIZE);
+  cmd->commandType = CREATE_TABLE;
+  cmd->fields = fields;
+  cmd->table = table;
+  return cmd;
 }
 
 struct Tuple* createTuple(struct Field* fields) {
@@ -129,8 +129,8 @@ struct Tuple* createTupleList(struct Field* fields, int count) {
   return results;
 }
 
-struct ParseTree* createInsertParseTree(char* table, struct Field* fields) {
-  struct ParseTree* command = malloc(sizeof(struct ParseTree));
+struct Command* createInsertCommand(char* table, struct Field* fields) {
+  struct Command* command = malloc(sizeof(struct Command));
   command->commandType = INSERT;
   command->fields = fields;
   command->table = table;
@@ -138,23 +138,23 @@ struct ParseTree* createInsertParseTree(char* table, struct Field* fields) {
   return command;
 }
 
-void destroyParseTree(struct ParseTree* tree) {
+void destroyCommand(struct Command* cmd) {
 
-  assert(tree, "Cannot destroy invalid tree");
+  assert(cmd, "Cannot destroy invalid cmd");
 
-  switch(tree->commandType) {
+  switch(cmd->commandType) {
     case CREATE_TABLE:
-      if(tree->fields) {
-        free(tree->fields);
+      if(cmd->fields) {
+        free(cmd->fields);
       }
     case CREATE_DATABASE:
     default:
-      free(tree);
+      free(cmd);
   }
   return;
 }
 
-void insertTuple(struct ParseTree* cmd) {
+void insertTuple(struct Command* cmd) {
   assert(cmd->commandType == INSERT, "Incompatible command type to function insert");
   assert(currentDatabase, "CurrentDatabase must be set!");
   assert(cmd->table, "Table must be provied!");

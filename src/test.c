@@ -1,5 +1,5 @@
 #include "common.h"
-#include "parseTreeHelpers.h"
+#include "commandHelpers.h"
 
 // Test functions!
 struct Table* createExampleTable(int count);
@@ -13,7 +13,7 @@ void testRetrieve(void);
 // When they are implemented, you can remove them
 // from here and link to the full function using our
 // common header file!
-struct ParseTree* parseGrammer(char* sql) {
+struct Command* parseGrammer(char* sql) {
   return NULL;
 }
 
@@ -50,7 +50,7 @@ void testRetrieve(void) {
   char names[FIELD_SIZE][NAME_LIMIT] = { "name4", "name2", "name3", "name1", };
   FieldType types[FIELD_SIZE][1] = { INTEGER, TEXT, DATE, INTEGER, };
   struct Field* projection = createFieldList(names, NULL, types, 4);
-  struct ParseTree* selectCmd = createSelectParseTree("table", projection, NULL);
+  struct Command* selectCmd = createSelectCommand("table", projection, NULL);
 
   struct Table* results = retrieve(selectCmd);
 
@@ -86,7 +86,7 @@ void testRetrieve(void) {
 
 void testCreateTable(void) {
 
-  struct ParseTree* createDBCommand = createCreateDatabaseParseTree("foo");
+  struct Command* createDBCommand = createCreateDatabaseCommand("foo");
   createDatabase(createDBCommand);
   assert(strcmp(currentDatabase, "foo") == 0, "currentDatabase should be set!");
   char tableFolderPath[PATH_SIZE];
@@ -98,7 +98,7 @@ void testCreateTable(void) {
   FieldType types[FIELD_SIZE][1] = { INTEGER, TEXT, DATE, INTEGER, };
   struct Field* fields = createFieldList(names, values, types, 4);
 
-  struct ParseTree* createTableCmd = createCreateTableParseTree("bar", fields);
+  struct Command* createTableCmd = createCreateTableCommand("bar", fields);
   createTable(createTableCmd);
   sprintf(tableFolderPath, "%s/foo/bar", DATABASE_DIR);
   assert(access(tableFolderPath, F_OK) != -1, "Table file was not constructed!");
@@ -112,25 +112,25 @@ void testCreateTable(void) {
 
   // cleanup garbage
   fclose(file);
-  destroyParseTree(createDBCommand);
-  destroyParseTree(createTableCmd);
+  destroyCommand(createDBCommand);
+  destroyCommand(createTableCmd);
 }
 
 void testParseGrammer(void) {
-  struct ParseTree* parseTree = parseGrammer("SELECT id from table1");
+  struct Command* command = parseGrammer("SELECT id from table1");
 
-  assert(parseTree != 0, "Should not contain a null pointer!");
-  assert(parseTree->commandType == SELECT, "Command type should equal select!");
-  assert(strcmp("table1", parseTree->table) == 0, "The table was not set propertly!");
-  assert(parseTree->whereConstraints != NULL, "WhereConstraints should have been specified!");
-  assert(parseTree->fields != NULL, "Field should not be null!");
-  assert(parseTree->fields+1 == NULL, "Field list should be NULL terminated!");
+  assert(command != 0, "Should not contain a null pointer!");
+  assert(command->commandType == SELECT, "command type should equal select!");
+  assert(strcmp("table1", command->table) == 0, "The table was not set propertly!");
+  assert(command->whereConstraints != NULL, "WhereConstraints should have been specified!");
+  assert(command->fields != NULL, "Field should not be null!");
+  assert(command->fields+1 == NULL, "Field list should be NULL terminated!");
 }
 
 void testStore(void) {
 
   // setup
-  struct ParseTree* createDatabaseCommand = createCreateDatabaseParseTree("test_store");
+  struct Command* createDatabaseCommand = createCreateDatabaseCommand("test_store");
   createDatabase(createDatabaseCommand);
 
   char names[FIELD_SIZE][NAME_LIMIT] = { "name1", "name2", "name3", "name4", };
@@ -140,18 +140,18 @@ void testStore(void) {
   FieldType types[FIELD_SIZE][1] = { INTEGER, TEXT, DATE, INTEGER, };
 
   struct Field* fields = createFieldList(names, values, types, 4);
-  struct ParseTree* createTableCmd = createCreateTableParseTree("table",
+  struct Command* createTableCmd = createCreateTableCommand("table",
       fields);
   createTable(createTableCmd);
 
   // test
-  struct ParseTree* insertCmd = createInsertParseTree("table", fields);
+  struct Command* insertCmd = createInsertCommand("table", fields);
   insertTuple(insertCmd);
   insertTuple(insertCmd);
 
   // teardown
-  destroyParseTree(createDatabaseCommand);
-  destroyParseTree(createTableCmd);
+  destroyCommand(createDatabaseCommand);
+  destroyCommand(createTableCmd);
 }
 
 /*

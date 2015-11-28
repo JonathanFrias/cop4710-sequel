@@ -7,7 +7,7 @@
 #include "lexer.h"
 #include "assert.h"
 
-#define PARSETREE_SIZE sizeof(struct ParseTree)
+#define COMMAND_SIZE sizeof(struct Command)
 #define WHERE_SIZE sizeof(struct Where)
 #define FIELD_SIZE sizeof(struct Field)
 #define TUPLE_SIZE sizeof(struct Tuple)
@@ -59,7 +59,7 @@ struct Where {
  * Field pointers should be NULL
  * terminated
  */
-struct ParseTree {
+struct Command {
   enum {
     CREATE_DATABASE,
     CREATE_TABLE,
@@ -86,15 +86,15 @@ struct Table {
   char name[NAME_LIMIT];
 };
 
-struct ParseTree* parseGrammer(char* sql);
+struct Command* parseGrammer(char* sql);
 
 // Store/Retrieve
-bool store(struct ParseTree* tuples);
+bool store(struct Command* tuples);
 
-struct Table* retrieve(struct ParseTree* tree); // Tuple list returned must be NULL terminated.
+struct Table* retrieve(struct Command* tree); // Tuple list returned must be NULL terminated.
 
-void createDatabase(struct ParseTree* createCommand);
-void createTable(struct ParseTree* parseTree);
+void createDatabase(struct Command* createCommand);
+void createTable(struct Command* Command);
 void setDatabase(char*);
 void computePadding(char*, char*, int);
 int getRecordCount(FILE* file);
