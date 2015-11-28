@@ -1,11 +1,7 @@
-#pragma once
-
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
-#include "lexer.h"
-#include "sql.tab.h"
 #include <stdbool.h>
+#include <string.h>
 #include <unistd.h>
 #include <time.h>
 #include "assert.h"
@@ -26,9 +22,9 @@
 char* currentDatabase;
 
 typedef enum {
-  INTEGER_t='I',
-  DATE_t='D',
-  TEXT_t='T',
+  INTEGER='I',
+  DATE='D',
+  TEXT='T',
 } FieldType;
 
 struct Field {
@@ -64,17 +60,19 @@ struct Where {
  */
 struct ParseTree {
   enum {
-    CREATE_DATABASE_t,
-    CREATE_TABLE_t,
-    DROP_DATABASE_t,
-    DROP_TABLE_t,
-    SAVE_t,
-    LOAD_DATABASE_t,
-    SELECT_t,
-    wSELECT_t,
-    INSERT_t,
-    UPDATE_t,
-    DELETE_t
+    CREATE_DATABASE,
+    CREATE_TABLE,
+    DROP_DATABASE,
+    DROP_TABLE,
+    COMMIT,
+    SAVE,
+    LOAD_DATABASE,
+    SELECT,
+    wSELECT,
+    INSERT,
+    UPDATE,
+    wUPDATE,
+    DELETE
   } commandType;
   char* table; // name of table
   struct Field* fields;
@@ -92,7 +90,7 @@ struct ParseTree* parseGrammer(char* sql);
 // Store/Retrieve
 bool store(struct ParseTree* tuples);
 
-struct Table* retrieve_table(struct ParseTree* tree); // Tuple list returned must be NULL terminated.
+struct Table* retrieve(struct ParseTree* tree); // Tuple list returned must be NULL terminated.
 
 void createDatabase(struct ParseTree* createCommand);
 void createTable(struct ParseTree* parseTree);
@@ -100,5 +98,3 @@ void setDatabase(char*);
 void computePadding(char*, char*, int);
 int getRecordCount(FILE* file);
 int getFieldCount(char* buffer, int size);
-
-struct Tuple* retrieve_tuple(struct ParseTree tree); // Tuple list returned must be NULL terminated.

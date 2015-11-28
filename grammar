@@ -1,0 +1,99 @@
+START -> COMMAND_LIST
+COMMAND_LIST -> COMMAND COMMAND_LIST2
+COMMAND_LIST2 -> COMMAND COMMAND_LIST2
+         | @
+COMMAND -> SYSTEM_COMMAND
+   | DDL_COMMAND
+   | DML_COMMAND
+SYSTEM_COMMAND -> CREATE_DATABASE_COMMAND
+    | DROP_DATABASE_COMMAND
+    | COMMIT_COMMAND
+    | SAVE_COMMAND
+    | LOAD_DATABASE_COMMAND
+DDL_COMMAND -> CREATE_TABLE_COMMAND
+       | DROP_TABLE_COMMAND
+DML_COMMAND -> INSERT_INTO_COMMAND
+       | DELETE_FROM_COMMAND
+       | UPDATE_COMMAND
+       | W_UPDATE_COMMAND
+       | SELECT_COMMAND
+       | W_SELECT_COMMAND
+CREATE_DATABASE_COMMAND -> create database ID ;
+DROP_DATABASE_COMMAND -> drop database ID ;
+SAVE_COMMAND -> save ;
+        | commit;
+LOAD_DATABASE_COMMAND -> load database ID ;
+CREATE_TABLE_COMMAND -> create table ID ( FIELD_DEF_LIST ) ;
+DROP_TABLE_COMMAND -> drop table ID ;
+INSERT_INTO_COMMAND -> insert into ID INSERT_INTO_COMMAND2
+INSERT_INTO_COMMAND2 -> ( FIELD_LIST ) VALUES ( LITERAL_LIST ) ;
+          | VALUES ( LITERAL_LIST ) ;
+DELETE_FROM_COMMAND -> delete from ID DELETE_FROM_COMMAND2
+DELETE_FROM_COMMAND2 -> where CONDITION ;
+          | ;
+UPDATE_COMMAND -> update ID set ID = EXPRESSION UPDATE_COMMAND2
+UPDATE_COMMAND2 -> , ID = EXPRESSION UPDATE_COMMAND2
+     | UPDATE_COMMAND3
+UPDATE_COMMAND3 -> where CONDITION ;
+     | ;
+W_UPDATE_COMMAND -> wUPDATE ID set W_UPDATE_COMMAND2
+W_UPDATE_COMMAND2 -> DATE_TIME ID = EXPRESSION W_UPDATE_COMMAND3
+       | ID = EXPRESSION W_UPDATE_COMMAND3
+W_UPDATE_COMMAND3 -> , W_UPDATE_COMMAND4
+       | W_UPDATE_COMMAND5
+W_UPDATE_COMMAND4 -> DATE_TIME ID = EXPRESSION W_UPDATE_COMMAND3
+       | ID = EXPRESSION W_UPDATE_COMMAND3
+W_UPDATE_COMMAND5 -> where CONDITION ;
+       | ;
+SELECT_COMMAND -> select * from ID ;
+W_SELECT_COMMAND -> wSELECT * from ID ;
+
+// Is this supposed to be case sensitive??
+
+w_Select_COMMAND -> wSelect w_Select_COMMAND2
+w_Select_COMMAND2 -> * from ID w_Select_COMMAND3
+       | ( FIELD_LIST ) from ID w_Select_COMMAND3
+w_Select_COMMAND3 -> where CONDITION ;
+       | ;
+FIELD_DEF_LIST -> FIELD_DEF FIELD_DEF_LIST2
+FIELD_DEF_LIST2 -> , FIELD_DEF FIELD_DEF_LIST2
+     | @
+FIELD_DEF ->
+FIELD_LIST -> ID FIELD_LIST2
+FIELD_LIST2 -> , ID FIELD_LIST2
+       | @
+LITERAL_LIST -> LITERAL LITERAL_LIST2
+LITERAL_LIST2 -> , LITERAL LITERAL_LIST2
+         | @
+LITERAL -> // integer, decimal, string, or DATE
+DATE_TIME -> DATE : TIME
+DATE -> date ( DIGIT DIGIT / DIGIT DIGIT / DIGIT DIGIT DIGIT DIGIT )
+      | date ( DIGIT DIGIT / DIGIT DIGIT / DIGIT DIGIT )
+TIME -> // no format specified
+
+// All ID's need to be checked for whether or not the ID exists in table (for field name)
+// in database (for table name) or in catalogue (for database name)
+
+
+
+
+// Tokens ...
+create
+drop
+load
+save
+commit
+database
+table
+insert
+into
+from
+where
+set
+delete
+=
+(
+)
+*
+,
+;
