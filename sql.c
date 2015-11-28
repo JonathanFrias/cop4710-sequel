@@ -1,10 +1,11 @@
 #include "common.h"
+#include "sql.tab.h"
 
-int main(void) 
+int main(void)     
 {
-	int i = 0; 
+	int i = 0;    
 	srand(1/2); 
-	char * sqlLine =    
+	char * sqlLine =        
 		("                                                                      \n"
 		 "::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 		 "::******************************************************************::\n"
@@ -21,7 +22,7 @@ int main(void)
 		 "::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 		 "                                                                      \n");
 
-	for (i = 0; i < strlen(sqlLine); i++)
+	for (i = 0; i < strlen(sqlLine); i++)   
 	{
 		printf("%c", sqlLine[i]); 
 		usleep(2000);
@@ -29,11 +30,12 @@ int main(void)
 
 	printf("Welcome to wSQLx! Enter a command or\n");
 	printf("Enter 'exit' to quit wSQLx or 'help' for more information\n\n");
-
+	
+	char* current_database = "NULL";
 	extern int yyparse(void);
 	char user_input[300];
 	char temp[300];
-	
+	 
 	do 
 	{
 		printf("wSQLx: ");
