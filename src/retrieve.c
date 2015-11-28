@@ -1,6 +1,6 @@
 #include "common.h"
 
-struct Table* retrieve(struct ParseTree* command) {
+struct Table* retrieve(struct Command* command) {
 
   // get table location
   char tablePath[PATH_SIZE];
