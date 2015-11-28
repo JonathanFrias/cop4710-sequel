@@ -6,3 +6,5 @@ wSQLx_project.vcxproj.user
 Debug/
 *.o
 .vs/
+tags
+out
