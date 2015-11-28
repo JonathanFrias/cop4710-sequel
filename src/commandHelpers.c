@@ -50,7 +50,7 @@ struct Where* createWhere(struct Field* field, whereCompare compareType) {
 struct Command* createSelectCommand(char* table, struct Field* projection, struct Where* whereConstraints) {
   struct Command* cmd = malloc(COMMAND_SIZE);
 
-  cmd->commandType = SELECT;
+  cmd->commandType = SELECT_t;
 
   if(table) {
     cmd->table = table;
@@ -71,7 +71,7 @@ struct Command* createWSelectCommand(char* table, struct Field* projection, stru
 
   struct Command* cmd = malloc(COMMAND_SIZE);
 
-  cmd->commandType = wSELECT;
+  cmd->commandType = wSELECT_t;
 
   if(table) {
     cmd->table = table;
@@ -89,7 +89,7 @@ struct Command* createWSelectCommand(char* table, struct Field* projection, stru
 
 struct Command* createCreateDatabaseCommand(char* databaseName) {
   struct Command* cmd = malloc(COMMAND_SIZE);
-  cmd->commandType = CREATE_DATABASE;
+  cmd->commandType = CREATE_DATABASE_t;
   cmd->table = databaseName;
   return cmd;
 }
@@ -97,7 +97,7 @@ struct Command* createCreateDatabaseCommand(char* databaseName) {
 struct Command* createCreateTableCommand(char* table,
     struct Field* fields) {
   struct Command* cmd = malloc(COMMAND_SIZE);
-  cmd->commandType = CREATE_TABLE;
+  cmd->commandType = CREATE_TABLE_t;
   cmd->fields = fields;
   cmd->table = table;
   return cmd;
@@ -131,7 +131,7 @@ struct Tuple* createTupleList(struct Field* fields, int count) {
 
 struct Command* createInsertCommand(char* table, struct Field* fields) {
   struct Command* command = malloc(sizeof(struct Command));
-  command->commandType = INSERT;
+  command->commandType = INSERT_t;
   command->fields = fields;
   command->table = table;
 
@@ -143,11 +143,11 @@ void destroyCommand(struct Command* cmd) {
   assert(cmd, "Cannot destroy invalid cmd");
 
   switch(cmd->commandType) {
-    case CREATE_TABLE:
+    case CREATE_TABLE_t:
       if(cmd->fields) {
         free(cmd->fields);
       }
-    case CREATE_DATABASE:
+    case CREATE_DATABASE_t:
     default:
       free(cmd);
   }
@@ -155,7 +155,7 @@ void destroyCommand(struct Command* cmd) {
 }
 
 void insertTuple(struct Command* cmd) {
-  assert(cmd->commandType == INSERT, "Incompatible command type to function insert");
+  assert(cmd->commandType == INSERT_t, "Incompatible command type to function insert");
   assert(currentDatabase, "CurrentDatabase must be set!");
   assert(cmd->table, "Table must be provied!");
   char tablePath[PATH_SIZE];

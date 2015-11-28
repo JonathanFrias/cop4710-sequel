@@ -1,10 +1,11 @@
 %{
 #include <stdio.h>
 #include "sql.tab.h"
-
+/*
 extern C2(void) {
-        int yylex(void);
+  int yylex(void);
 }
+*/
 int line_number = 1;
 
 %}
@@ -63,3 +64,12 @@ Other	     [-!@#$%&+:"~`]
 \n			 { ; } 
 .	                 {printf("Character %s not tokenized\n", yytext);return 0;}
 %%
+
+int yywrap(void) {
+
+}
+
+int yyparse(void) {
+  yylex();
+  return 0;
+}

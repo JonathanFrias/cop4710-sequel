@@ -1,5 +1,6 @@
-#include "common.h"
-#include "sql.tab.h"
+#include "src/common.h"
+#include "out/sql.tab.h"
+
 
 int main(void)     
 {
@@ -25,7 +26,7 @@ int main(void)
 	for (i = 0; i < strlen(sqlLine); i++)   
 	{
 		printf("%c", sqlLine[i]); 
-		usleep(2000);
+		// usleep(2000);
 	}
 
 	printf("Welcome to wSQLx! Enter a command or\n");
@@ -51,7 +52,7 @@ int main(void)
 		
 
 
-	}while (strcmp(user_input, "exit") != 0);    //this infinitely loops
+	} while (strcmp(user_input, "exit") != 0);    //this infinitely loops
 	
 	
 	return 0;

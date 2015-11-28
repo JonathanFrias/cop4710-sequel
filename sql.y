@@ -1,9 +1,11 @@
 %{ 
 #include <stdio.h>
 #include <stdlib.h>
+#include "src/common.h"
 
 int intval;
 
+struct Command* c;
 %}
 
 %start START
@@ -15,10 +17,11 @@ int intval;
 %token RP LP COMMA SEMIC AST
 
 
+
 %%
-START          : COMMAND_LIST  {printf("Query Accepted\n");}
+START          : COMMAND_LIST 
                      
-COMMAND_LIST   : COMMAND COMMAND_LIST2 
+COMMAND_LIST   : COMMAND {printf("Query Accepted\n"); /* create new current command */} COMMAND_LIST2 
  
 COMMAND_LIST2  : COMMAND COMMAND_LIST2  
 	       | /* EMPTY */ 
@@ -119,13 +122,11 @@ COMP                    : LT
 			| NOTEQ   
 %%
 
-yyerror()
-{
+yyerror() {
    printf("REJECT\n");
    return 0;
 }
 
-yywrap()
-{
-
+yywrap() {
+  printf("wrap!\n");
 }

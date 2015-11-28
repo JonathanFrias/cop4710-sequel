@@ -1,5 +1,5 @@
 #include "common.h"
-#include "sql.tab.h"
+#include "../out/sql.tab.h"
 
 int main(void)     
 {
