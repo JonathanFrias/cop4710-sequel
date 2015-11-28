@@ -4,6 +4,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <time.h>
+#include "../out/lexer.h"
 #include "assert.h"
 
 #define COMMAND_SIZE sizeof(struct Command)
@@ -22,9 +23,9 @@
 char* currentDatabase;
 
 typedef enum {
-  INTEGER='I',
-  DATE='D',
-  TEXT='T',
+  INTEGER_t='I',
+  DATE_t='D',
+  TEXT_t='T',
 } FieldType;
 
 struct Field {
@@ -60,19 +61,17 @@ struct Where {
  */
 struct Command {
   enum {
-    CREATE_DATABASE,
-    CREATE_TABLE,
-    DROP_DATABASE,
-    DROP_TABLE,
-    COMMIT,
-    SAVE,
-    LOAD_DATABASE,
-    SELECT,
-    wSELECT,
-    INSERT,
-    UPDATE,
-    wUPDATE,
-    DELETE
+    CREATE_DATABASE_t,
+    CREATE_TABLE_t,
+    DROP_DATABASE_t,
+    DROP_TABLE_t,
+    SAVE_t,
+    LOAD_DATABASE_t,
+    SELECT_t,
+    wSELECT_t,
+    INSERT_t,
+    UPDATE_t,
+    DELETE_t
   } commandType;
   char* table; // name of table
   struct Field* fields;
@@ -98,3 +97,4 @@ void setDatabase(char*);
 void computePadding(char*, char*, int);
 int getRecordCount(FILE* file);
 int getFieldCount(char* buffer, int size);
+int yyparse(void);

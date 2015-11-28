@@ -1,11 +1,13 @@
-#include "common.h"
-#include "../out/sql.tab.h"
+#include "src/common.h"
+#include "out/sql.tab.h"
 
+
+struct Command* cmd;
 int main(void)     
 {
 	int i = 0;    
 	srand(1/2); 
-	char * sqlLine =      
+	char * sqlLine =        
 		("                                                                      \n"
 		 "::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 		 "::******************************************************************::\n"
@@ -22,10 +24,10 @@ int main(void)
 		 "::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 		 "                                                                      \n");
 
-	for (i = 0; i < strlen(sqlLine); i++) 
+	for (i = 0; i < strlen(sqlLine); i++)   
 	{
 		printf("%c", sqlLine[i]); 
-		usleep(2000);
+		// usleep(2000);
 	}
 
 	printf("Welcome to wSQLx! Enter a command or\n");
@@ -35,7 +37,7 @@ int main(void)
 	extern int yyparse(void);
 	char user_input[300];
 	char temp[300];
-	
+	 
 	do 
 	{
 		printf("wSQLx: ");
@@ -51,7 +53,7 @@ int main(void)
 		
 
 
-	}while (strcmp(user_input, "exit") != 0);    //this infinitely loops
+	} while (strcmp(user_input, "exit") != 0);    //this infinitely loops
 	
 	
 	return 0;
