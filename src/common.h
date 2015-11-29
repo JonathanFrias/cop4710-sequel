@@ -92,6 +92,7 @@ bool store(struct Command* tuples);
 
 struct Table* retrieve(struct Command* tree); // Tuple list returned must be NULL terminated.
 
+void setDatabase(char*);
 void createDatabase(struct Command* createCommand);
 void createTable(struct Command* Command);
 void setDatabase(char*);
