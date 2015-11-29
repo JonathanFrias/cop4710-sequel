@@ -1,114 +1,26 @@
 #include "common.h"
-#include "parseTreeHelpers.h"
+#include "commandHelpers.h"
 
 // Test functions!
-struct Table* createExampleTable(int count);
-bool destroyExampleTable(struct Table*);
 void testStore(void);
-void testRetrieve(void);
 void testParseGrammer(void);
-void printTable(struct Table* table);
 void testCreateTable(void);
+void testRetrieve(void);
 
 // The following method stubs are not implemented!
 // When they are implemented, you can remove them
 // from here and link to the full function using our
 // common header file!
-struct ParseTree* parseGrammer(char* sql) {
+struct Command* parseGrammer(char* sql) {
   return NULL;
 }
 
-bool storeTuples(struct Tuple* tuples, int count) {
+bool storeTuples(char* table, struct Tuple* tuples, int count) {
   return false;
 }
 
 bool storeTable(struct Table* table) {
   return false;
-}
-
-struct Table* retrieve(struct ParseTree* tree) {
-  return NULL;
-}
-
-void testCreateTable(void) {
-
-  struct ParseTree* createDBCommand = createCreateDatabaseParseTree("foo");
-  createDatabase(createDBCommand);
-  assert(strcmp(currentDatabase, "foo") == 0, "currentDatabase should be set!");
-  char tableFolderPath[1000];
-
-  char names[FIELD_SIZE][NAME_LIMIT] = {
-    "name1",
-    "name2",
-    "name3",
-    "name4",
-  };
-
-  char values[FIELD_SIZE][VALUE_LIMIT] = {
-    "value1",
-    "value2",
-    "value3",
-    "value4",
-  };
-  struct Field* fields = createFieldList(names, values, 4);
-
-  struct ParseTree* createTableCmd = createCreateTableParseTree("bar", fields);
-  createTable(createTableCmd);
-  sprintf(tableFolderPath, "%s/foo/bar", DATABASE_DIR);
-  assert(access(tableFolderPath, F_OK) != -1, "Table file was not constructed!");
-
-  char fileContents[1000];
-  FILE* file = fopen(tableFolderPath, "r");
-  fgets(fileContents, 999, file);
-
-  assert(strcmp(fileContents, "name1|name2|name3|name4\n") == 0, "Table was not written correctly!");
-
-  // cleanup garbage
-  fclose(file);
-  destroyParseTree(createDBCommand);
-  destroyParseTree(createTableCmd);
-}
-
-void testParseGrammer(void) {
-  struct ParseTree* parseTree = parseGrammer("SELECT id from table1");
-
-  assert(parseTree != 0, "Should not contain a null pointer!");
-  assert(parseTree->commandType == SELECT, "Command type should equal select!");
-  assert(strcmp("table1", parseTree->table) == 0, "The table was not set propertly!");
-  assert(parseTree->whereConstraints != NULL, "WhereConstraints should have been specified!");
-  assert(parseTree->updateFields == NULL, "UPDATE fields were not specified!");
-  assert(parseTree->insertFields == NULL, "INSERT fields were not specified!");
-  assert(parseTree->fields != NULL, "Field should not be null!");
-  assert(parseTree->fields+1 == NULL, "Field list should be NULL terminated!");
-}
-
-void testStore(void) {
-  struct Table* table = createExampleTable(10);
-
-  bool res = storeTuples(table->tuples, 10);
-  assert(res, "storeTuples function did not report success!");
-
-  bool res2 = storeTable(table);
-  assert(res, "storeTable function did not report success!");
-}
-
-void testRetrieve(void) {
-  // setup
-  struct Table* table = createExampleTable(10);
-  bool res = storeTuples(table->tuples, 10);
-
-  //test
-  char sql[100];
-  sprintf(sql, "select * from %s;\n", table->name);
-
-  struct ParseTree* parseTree = parseGrammer(sql);
-
-  struct Table* results = retrieve(parseTree);
-  assert(results != 0, "retrieve operation returned a null pointer!");
-  assert(results->count == table->count, "All records not stored correctly!");
-
-  //teardown
-  destroyExampleTable(table);
 }
 
 /*
@@ -119,39 +31,128 @@ int main(void) {
   testCreateTable();
   printf("===============Example Table:\n");
 
-  // create a table with 10 tuples.
-  struct Table* table = createTable(10);
-
-  printf("%10s%10s\n", "EMP", "EMP#");    //should modify the structure to include an attribute list
-  for (int i = 0; i < 10; i++)
-	  printf("%10s%10d\n", table->tuples[i].primaryKey->name, table->tuples[i].primaryKey->value);
-  printf("\n");
-
-
-  SqlRun();
-  //struct Table* table = createExampleTable(10);
-  //printTable(table);
-  //destroyExampleTable(table);
-
-  getchar();
   printf("\n===============testStore\n");
   testStore();
-<<<<<<< HEAD
 
-  getchar();
-=======
->>>>>>> refs/remotes/JonathanFrias/store
   printf("\n===============testRetrieve\n");
   testRetrieve();
 
-  getchar();
   printf("\n===============testParseGrammer\n");
   testParseGrammer();
-
-  getchar();
   return 0;
 }
 
+void testRetrieve(void) {
+  // This depends on testStore being run. because reasons!
+
+  char names[FIELD_SIZE][NAME_LIMIT] = { "name4", "name2", "name3", "name1", };
+  FieldType types[FIELD_SIZE][1] = { INTEGER, TEXT, DATE, INTEGER, };
+  struct Field* projection = createFieldList(names, NULL, types, 4);
+  struct Command* selectCmd = createSelectCommand("table", projection, NULL);
+
+  struct Table* results = retrieve(selectCmd);
+
+  assert(results->count == 2, "Did not retrieve correct number of records");
+  assert(strcmp(results->name, "table") == 0, "Table name was not set in the resultset");
+
+  assert(strcmp(results->tuples[0].fields[0].name, "name1") == 0 , "Problem with resultset");
+  assert(strcmp(results->tuples[0].fields[1].name, "name2") == 0 , "Problem with resultset");
+  assert(strcmp(results->tuples[0].fields[2].name, "name3") == 0 , "Problem with resultset");
+  assert(strcmp(results->tuples[0].fields[3].name, "name4") == 0 , "Problem with resultset");
+  assert(results->tuples[0].fields[4].name == 0 , "Problem with resultset"); // make sure null terminated
+
+  assert(strcmp((char*) results->tuples[0].fields[0].value, "1") == 0 , "Problem with resultset");
+  assert(strcmp((char*) results->tuples[0].fields[1].value, "value2") == 0 , "Problem with resultset");
+  assert(strcmp((char*) results->tuples[0].fields[2].value, "1/1/2015") == 0 , "Problem with resultset");
+  assert(strcmp((char*) results->tuples[0].fields[3].value, "3") == 0 , "Problem with resultset");
+  assert(results->tuples[0].fields[4].name == 0 , "Problem with resultset");
+
+
+  assert(strcmp(results->tuples[1].fields[0].name, "name1") == 0 , "Problem with resultset");
+  assert(strcmp(results->tuples[1].fields[1].name, "name2") == 0 , "Problem with resultset");
+  assert(strcmp(results->tuples[1].fields[2].name, "name3") == 0 , "Problem with resultset");
+  assert(strcmp(results->tuples[1].fields[3].name, "name4") == 0 , "Problem with resultset");
+  assert(results->tuples[1].fields[4].name == 0 , "Problem with resultset"); // make sure null terminated
+
+  assert(strcmp((char*) results->tuples[1].fields[0].value, "1") == 0 , "Problem with resultset");
+  assert(strcmp((char*) results->tuples[1].fields[1].value, "value2") == 0 , "Problem with resultset");
+  assert(strcmp((char*) results->tuples[1].fields[2].value, "1/1/2015") == 0 , "Problem with resultset");
+  assert(strcmp((char*) results->tuples[1].fields[3].value, "3") == 0 , "Problem with resultset");
+  assert(results->tuples[1].fields[4].name == 0 , "Problem with resultset");
+
+}
+
+void testCreateTable(void) {
+
+  struct Command* createDBCommand = createCreateDatabaseCommand("foo");
+  createDatabase(createDBCommand);
+  assert(strcmp(currentDatabase, "foo") == 0, "currentDatabase should be set!");
+  char tableFolderPath[PATH_SIZE];
+
+  char names[FIELD_SIZE][NAME_LIMIT] = { "name1", "name2", "name3", "name4", };
+
+  char values[FIELD_SIZE][VALUE_LIMIT] = { "1", "value2", "1/1/2015", "3", };
+
+  FieldType types[FIELD_SIZE][1] = { INTEGER, TEXT, DATE, INTEGER, };
+  struct Field* fields = createFieldList(names, values, types, 4);
+
+  struct Command* createTableCmd = createCreateTableCommand("bar", fields);
+  createTable(createTableCmd);
+  sprintf(tableFolderPath, "%s/foo/bar", DATABASE_DIR);
+  assert(access(tableFolderPath, F_OK) != -1, "Table file was not constructed!");
+
+  char fileContents[RECORD_SIZE];
+  FILE* file = fopen(tableFolderPath, "r");
+  fgets(fileContents, RECORD_SIZE, file);
+
+  char* header = "name1[I]|name2[T]|name3[D]|name4[I]\n";
+  assert(strcmp(fileContents, header) == 0, "Table was not written correctly!");
+
+  // cleanup garbage
+  fclose(file);
+  destroyCommand(createDBCommand);
+  destroyCommand(createTableCmd);
+}
+
+void testParseGrammer(void) {
+  struct Command* command = parseGrammer("SELECT id from table1");
+
+  assert(command != 0, "Should not contain a null pointer!");
+  assert(command->commandType == SELECT, "command type should equal select!");
+  assert(strcmp("table1", command->table) == 0, "The table was not set propertly!");
+  assert(command->whereConstraints != NULL, "WhereConstraints should have been specified!");
+  assert(command->fields != NULL, "Field should not be null!");
+  assert(command->fields+1 == NULL, "Field list should be NULL terminated!");
+}
+
+void testStore(void) {
+
+  // setup
+  struct Command* createDatabaseCommand = createCreateDatabaseCommand("test_store");
+  createDatabase(createDatabaseCommand);
+
+  char names[FIELD_SIZE][NAME_LIMIT] = { "name1", "name2", "name3", "name4", };
+
+  char values[FIELD_SIZE][VALUE_LIMIT] = { "1", "value2", "1/1/2015", "3", };
+
+  FieldType types[FIELD_SIZE][1] = { INTEGER, TEXT, DATE, INTEGER, };
+
+  struct Field* fields = createFieldList(names, values, types, 4);
+  struct Command* createTableCmd = createCreateTableCommand("table",
+      fields);
+  createTable(createTableCmd);
+
+
+  printf("%10s%10s\n", "EMP", "EMP#");    //should modify the structure to include an attribute list
+  // test
+  struct Command* insertCmd = createInsertCommand("table", fields);
+  insertTuple(insertCmd);
+  insertTuple(insertCmd);
+
+  // teardown
+  destroyCommand(createDatabaseCommand);
+  destroyCommand(createTableCmd);
+}
 /*
  *  This example represents the a sample of how
  *  the contents of a table should be represented.
@@ -184,28 +185,6 @@ struct Table* createExampleTable(int count) {
   struct Table* table = (struct Table*) malloc(sizeof(struct Table));
   table->tuples = tuples;
   table->count = count;
-  table->name = "exampleTable";
+  snprintf(table->name, sizeof(table->name), "exampleTable");
   return table;
-}
-
-void printTable(struct Table* table) {
-  for(int i = 0; i < table->count; i++) {
-    printf("%s\n", table->tuples[i].primaryKey->name);
-    printf("%s\n", table->tuples[i].primaryKey->value);
-  }
-  return;
-}
-
-/*
- * Cleanup allocated memory from a table.
- */
-bool destroyExampleTable(struct Table* table) {
-  for(int i = 0; i < table->count; i++) {
-    free(table->tuples[i].primaryKey->name);
-    free(table->tuples[i].primaryKey->value);
-    free(table->tuples[i].primaryKey);
-  }
-  free(table->tuples);
-  free(table);
-  return true;
 }

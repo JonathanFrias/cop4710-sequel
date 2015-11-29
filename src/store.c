@@ -5,10 +5,10 @@
  * This function creates a folder.
  * The folder name is the name of the database
  */
-void createDatabase(struct ParseTree* createCommand) {
+void createDatabase(struct Command* createCommand) {
 
   assert(createCommand->commandType == CREATE_DATABASE,
-      "Incompatible parseTree commandType to function createDatabase");
+      "Incompatible Command commandType to function createDatabase");
   mkdir(DATABASE_DIR, 0700);
 
   char folderPath[NAME_LIMIT];
@@ -36,35 +36,34 @@ void setDatabase(char* database) {
  * Creates the table structure on disk.
  * Assumes that field list is NULL terminated.
  */
-void createTable(struct ParseTree* parseTree) {
+void createTable(struct Command* command) {
 
   // validations!
-  assert(parseTree->commandType == CREATE_TABLE,
-    "Expectd parseTree commandType to be CREATE_TABLE");
-  assert(parseTree->fields, "Fields must be provided!");
-  assert(parseTree->table, "Table name must be provided");
+  assert(command->commandType == CREATE_TABLE,
+    "Expectd command commandType to be CREATE_TABLE");
+  assert(command->fields, "Fields must be provided!");
+  assert(command->table, "Table name must be provided");
   assert(currentDatabase, "Please select a database!");
 
   // Create a table file in the default database directory
-  char tablePath[1000];
-  snprintf(tablePath, sizeof(tablePath), "%s/%s/%s", DATABASE_DIR, currentDatabase, parseTree->table);
+  char tablePath[PATH_SIZE];
+  snprintf(tablePath, sizeof(tablePath), "%s/%s/%s", DATABASE_DIR, currentDatabase, command->table);
   FILE* tableFile = fopen(tablePath, "w");
 
   int i = 0;
 
-  struct Field* fields[FIELD_LIMIT];
-  char headerLine[FIELD_LIMIT*NAME_LIMIT+FIELD_LIMIT];
-  char tmpLine[FIELD_LIMIT*NAME_LIMIT+FIELD_LIMIT];
-  struct Field* providedFields = parseTree->fields;
+  char headerLine[HEADER_SIZE];
+  char tmpLine[HEADER_SIZE];
 
-  while((*(parseTree->fields+i)).name != NULL) {
+  while((*(command->fields+i)).name != NULL) {
     char name[NAME_LIMIT] = "";
-    snprintf(name, sizeof(name), parseTree->fields[i].name);
-    snprintf(tmpLine, sizeof(headerLine), headerLine);
-    snprintf(headerLine, sizeof(headerLine), "%s|%s", tmpLine, name);
+    char type = command->fields[i].fieldType;
+    snprintf(name, sizeof(name), "%s", command->fields[i].name);
+    snprintf(tmpLine, sizeof(headerLine), "%s", headerLine);
+    snprintf(headerLine, sizeof(headerLine), "%s|%s[%c]", tmpLine, name, type);
     i++;
   }
   fputs(headerLine+1, tableFile); // +1 to ignore leading '|'
-  fputs("\n", tableFile);
+  fputs("\n", tableFile); // newline after header line
   fclose(tableFile);
 }
