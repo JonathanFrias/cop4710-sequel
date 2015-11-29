@@ -1,4 +1,5 @@
 #include "common.h"
+#include "retrieve.h"
 
 struct Table* retrieve(struct Command* command) {
 
@@ -23,7 +24,7 @@ struct Table* retrieve(struct Command* command) {
 
   struct Field* recordFields = malloc(sizeof(struct Field)*fieldCount*recordCount*2+recordCount);
 
-  struct Tuple* tuples = malloc(sizeof(struct Tuple)*recordCount);
+  struct Tuple* tuples = calloc(recordCount+1, sizeof(struct Tuple));
 
   int i = 0;
   // This loops though the header lines of the table
@@ -62,11 +63,12 @@ struct Table* retrieve(struct Command* command) {
     currentRecord+=2; // to force NULL delimited records!
     tupleCount++;
   }
-  struct Table* table = malloc(sizeof(struct Table));
+  struct Table* table = calloc(1, sizeof(struct Table));
   table->tuples = tuples;
   table->count = recordCount;
   snprintf(table->name, sizeof(table->name), "%s", command->table);
   fclose(file);
+  applyWhere(table, command, fieldCount);
   return table;
 }
 
@@ -95,3 +97,132 @@ int getRecordCount(FILE* file) {
   rewind(file);
   return lines-1;
 }
+
+int tupleComparator(const void* first, const void* second) {
+  struct Tuple* t1 = (struct Tuple*) first;
+  struct Tuple* t2 = (struct Tuple*) second;
+
+  if(t1->fields == 0 || t2->fields == 0) {
+    return 1;
+  } else {
+    return -1;
+  }
+}
+
+bool whereCompare(struct Where* compare) {
+
+  char* fieldValue = (char*) compare->target;
+  char* compareValue = (char*) compare->field->value;
+
+  if(compare->field->fieldType == INTEGER) {
+    if(compare->compareType == EQUAL) {
+      return intEq(fieldValue, compareValue);
+    }
+
+    if(compare->compareType == LESS_THAN) {
+      return intLt(fieldValue, compareValue);
+    }
+
+    if(compare->compareType == LESS_THAN_OR_EQ) {
+      return intLt(fieldValue, compareValue) || intEq(fieldValue, compareValue);
+    }
+
+    if(compare->compareType == GREATHER_THAN) {
+      return intGt(fieldValue, compareValue);
+    }
+
+    if(compare->compareType == GREATHER_THAN_OR_EQ) {
+      return intGt(fieldValue, compareValue) || intEq(fieldValue, compareValue);
+    }
+
+    if(compare->compareType == NOT_EQUAL) {
+      return !intEq(fieldValue, compareValue);
+    }
+  }
+
+  if(compare->field->fieldType == TEXT) {
+    if(compare->compareType == EQUAL) {
+      return textEq(fieldValue, compareValue);
+    }
+
+    if(compare->compareType == LESS_THAN) {
+      return textLt(fieldValue, compareValue);
+    }
+
+    if(compare->compareType == LESS_THAN_OR_EQ) {
+      return textLt(fieldValue, compareValue) || textEq(fieldValue, compareValue);
+    }
+
+    if(compare->compareType == GREATHER_THAN) {
+      return textGt(fieldValue, compareValue);
+    }
+
+    if(compare->compareType == GREATHER_THAN_OR_EQ) {
+      return textGt(fieldValue, compareValue) || textEq(fieldValue, compareValue);
+    }
+
+    if(compare->compareType == NOT_EQUAL) {
+      return !textEq(fieldValue, compareValue);
+    }
+  }
+  return false;
+}
+
+
+bool textLt(char* a, char* b) {
+  return strcmp(a, b) < 0;
+}
+
+bool textGt(char* a, char* b) {
+  return strcmp(a, b) > 0;
+}
+
+bool textEq(char* a, char* b) {
+  return strcmp(a, b) == 0;
+}
+
+bool intEq(char* a, char* b) {
+  return atoi(a) == atoi(b);
+}
+
+bool intLt(char* a, char* b) {
+  return atoi(a) < atoi(b);
+}
+
+bool intGt(char* a, char* b) {
+  return atoi(a) > atoi(b);
+}
+
+void applyWhere(struct Table* table, struct Command* cmd, int fieldCount) {
+  if(!cmd->whereConstraints) {
+    return;
+  }
+  int size = table->count;
+  // compare every field of every record, against every whereConstraint
+  for(int i = 0; i < table->count; i++) {
+    for(int j = 0; j < fieldCount; j++) {
+      struct Where* where = NULL;
+      int k = 0;
+      while((where = &cmd->whereConstraints[k])->field != NULL) {
+
+        char* name = table->tuples[i].fields[j].name;
+        char* value = table->tuples[i].fields[j].value;
+        if(strcmp(name, where->field->name) == 0) {
+          if(strcmp(value, where->field->value) != 0) {
+            // exclude record and skip the rest of fields
+            // TODO: Fix the huge memory leak here!
+            j = fieldCount;
+            table->count -= 1;
+            table->tuples[i].fields[j].name = 0;
+            table->tuples[i].fields[j].value = 0;
+            table->tuples[i].fields = 0;
+            break;
+          }
+        }
+        k++;
+      }
+    }
+  }
+  qsort(table->tuples, size, sizeof(struct Tuple), tupleComparator);
+}
+

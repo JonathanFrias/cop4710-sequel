@@ -41,14 +41,17 @@ struct Tuple {
 
 typedef enum {
   LESS_THAN,
+  LESS_THAN_OR_EQ,
   GREATHER_THAN,
-  // ...
-} whereCompare;
+  GREATHER_THAN_OR_EQ,
+  EQUAL,
+  NOT_EQUAL,
+} whereType;
 
 struct Where {
   struct Field* field;
   void* target;
-  whereCompare compareType;
+  whereType compareType;
 };
 
 /*
@@ -99,3 +102,4 @@ void setDatabase(char*);
 void computePadding(char*, char*, int);
 int getRecordCount(FILE* file);
 int getFieldCount(char* buffer, int size);
+bool whereCompare(struct Where* compare);
