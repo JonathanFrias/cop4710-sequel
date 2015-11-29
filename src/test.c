@@ -143,7 +143,6 @@ void testStore(void) {
   createTable(createTableCmd);
 
 
-  printf("%10s%10s\n", "EMP", "EMP#");    //should modify the structure to include an attribute list
   // test
   struct Command* insertCmd = createInsertCommand("table", fields);
   insertTuple(insertCmd);
