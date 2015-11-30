@@ -75,11 +75,11 @@ void writeHeaderLine(FILE* tableFile, struct Field* fields) {
 }
 
 /*
- * Updates a table.
+ * Updates a table. Can insert and remove records
  *
  * Step 1. Read the whole table into memory.
  * Step 2. Write the column information back to the file.
- * Step 3. Update the recods in memory.
+ * Step 3. Update the records in memory.
  * Step 4. Write the entire table back into the file.
  * Step 5. Cleanup
  */
@@ -113,8 +113,11 @@ void update(struct Command* command) {
     insertTuple(tmpCommand);
     free(tmpCommand);
   }
-  for(int i = 0; filtered[i].fields != NULL; i++) {
-    insertTuple(createInsertCommand(command->table, filtered[i].fields));
+
+  if(command->commandType != DELETE) {
+    for(int i = 0; filtered[i].fields != NULL; i++) {
+      insertTuple(createInsertCommand(command->table, filtered[i].fields));
+    }
   }
 
   // Step 5.
@@ -122,3 +125,8 @@ void update(struct Command* command) {
   free(filtered);
 }
 
+
+void  delete(struct Command* command) {
+  assert(command->commandType == DELETE, "Incompatible command type!");
+  update(command);
+}
