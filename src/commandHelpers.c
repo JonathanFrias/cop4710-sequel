@@ -1,6 +1,6 @@
 #include "common.h"
 
-struct Field* createField(char* name, char* value) {
+struct Field* createField(char* name, char* value, whereType type) {
 
   // MUST USE CALLOC, not MALLOC!
   struct Field* field = (struct Field*) calloc(2, sizeof(struct Field));
@@ -17,6 +17,7 @@ struct Field* createField(char* name, char* value) {
     field->value = "field_value";
   }
 
+  field->fieldType = type;
   return field;
 }
 
@@ -36,21 +37,25 @@ struct Field* createFieldList(char* names, char* values, FieldType types[FIELD_S
   return fieldList;
 }
 
-struct Where* createWhere(struct Field* field, whereCompare compareType) {
-  struct Where* whereCondition = malloc(WHERE_SIZE);
+struct Where* createWhere(struct Field* field, whereType compareType) {
+  struct Where* whereCondition = calloc(2, sizeof(struct Where));
 
   if(field) {
     whereCondition->field = field;
   } else {
-    whereCondition->field = createField("WhereCondname", "WhereCondValue");
+    whereCondition->field = createField("WhereCondname", "WhereCondValue", TEXT_t);
   }
+  whereCondition->target = field->value;
+  whereCondition->compareType = compareType;
   return whereCondition;
 }
 
-struct Command* createSelectCommand(char* table, struct Field* projection, struct Where* whereConstraints) {
+struct Command* createSelectCommand(char* table, struct Field* projection[50], struct Where* whereConstraints) {
+  int i;
+
   struct Command* cmd = malloc(COMMAND_SIZE);
 
-  cmd->commandType = SELECT;
+  cmd->commandType = SELECT_t;
 
   if(table) {
     cmd->table = table;
@@ -59,19 +64,22 @@ struct Command* createSelectCommand(char* table, struct Field* projection, struc
   }
 
   if(projection) {
-    cmd->fields = projection;
+    for(i=0; i<50; i++)
+      cmd->fields[i] = projection[i];
   } else {
-    cmd->fields = createField("selectName", "selectVal");
+      for(i=0; i<50; i++)
+        cmd->fields[i] = createField("selectName", "selectVal", TEXT_t);
   }
+  cmd->whereConstraints = whereConstraints;
 
   return cmd;
 }
 
-struct Command* createWSelectCommand(char* table, struct Field* projection, struct Where* whereConstraints) {
-
+struct Command* createWSelectCommand(char* table, struct Field* projection[50], struct Where* whereConstraints) {
+  int i;
   struct Command* cmd = malloc(COMMAND_SIZE);
 
-  cmd->commandType = wSELECT;
+  cmd->commandType = wSELECT_t;
 
   if(table) {
     cmd->table = table;
@@ -80,25 +88,30 @@ struct Command* createWSelectCommand(char* table, struct Field* projection, stru
   }
 
   if(projection) {
-    cmd->fields = projection;
+    for(i=0; i<50; i++)
+      cmd->fields[i] = projection[i];
   } else {
-    cmd->fields = createField("selectName", "selectVal");
+    for(i=0; i<50; i++)
+      cmd->fields[i] = createField("selectName", "selectVal", TEXT_t);
   }
   return cmd;
 }
 
 struct Command* createCreateDatabaseCommand(char* databaseName) {
   struct Command* cmd = malloc(COMMAND_SIZE);
-  cmd->commandType = CREATE_DATABASE;
+  cmd->commandType = CREATE_DATABASE_t;
   cmd->table = databaseName;
   return cmd;
 }
 
 struct Command* createCreateTableCommand(char* table,
-    struct Field* fields) {
+    struct Field* fields[50]) {
+  int i;
+
   struct Command* cmd = malloc(COMMAND_SIZE);
-  cmd->commandType = CREATE_TABLE;
-  cmd->fields = fields;
+  cmd->commandType = CREATE_TABLE_t;
+  for(i=0; i<50; i++)
+    cmd->fields[i] = fields[i];
   cmd->table = table;
   return cmd;
 }
@@ -109,7 +122,7 @@ struct Tuple* createTuple(struct Field* fields) {
   if(fields) {
     result->fields = fields;
   } else {
-    result->fields = createField("createTuple", "createValue1");
+    result->fields = createField("createTuple", "createValue1", TEXT_t);
   }
 
   return result;
@@ -122,17 +135,20 @@ struct Tuple* createTupleList(struct Field* fields, int count) {
     if(fields) {
       results[i].fields = fields;
     } else {
-      results[i].fields = createField("createTuple", "createValue1");
+      results[i].fields = createField("createTuple", "createValue1", TEXT_t);
     }
   }
 
   return results;
 }
 
-struct Command* createInsertCommand(char* table, struct Field* fields) {
+struct Command* createInsertCommand(char* table, struct Field* fields[50]) {
+  int i;
+
   struct Command* command = malloc(sizeof(struct Command));
-  command->commandType = INSERT;
-  command->fields = fields;
+  command->commandType = INSERT_t;
+  for (i=0; i<50; i++)
+    command->fields[i] = fields[i];
   command->table = table;
 
   return command;
@@ -143,11 +159,11 @@ void destroyCommand(struct Command* cmd) {
   assert(cmd, "Cannot destroy invalid cmd");
 
   switch(cmd->commandType) {
-    case CREATE_TABLE:
+    case CREATE_TABLE_t:
       if(cmd->fields) {
         free(cmd->fields);
       }
-    case CREATE_DATABASE:
+    case CREATE_DATABASE_t:
     default:
       free(cmd);
   }
@@ -155,7 +171,7 @@ void destroyCommand(struct Command* cmd) {
 }
 
 void insertTuple(struct Command* cmd) {
-  assert(cmd->commandType == INSERT, "Incompatible command type to function insert");
+  assert(cmd->commandType == INSERT_t, "Incompatible command type to function insert");
   assert(currentDatabase, "CurrentDatabase must be set!");
   assert(cmd->table, "Table must be provied!");
   char tablePath[PATH_SIZE];
@@ -165,9 +181,9 @@ void insertTuple(struct Command* cmd) {
   FILE* file = fopen(tablePath, "a");
 
   int i = 0;
-  while(cmd->fields[i].name != NULL) {
-    fputs((char*) cmd->fields[i].value, file);
-    if(cmd->fields[i+1].name != NULL) {
+  while(cmd->fields[i]->name != NULL) {
+    fputs((char*) cmd->fields[i]->value, file);
+    if(cmd->fields[i+1]->name != NULL) {
       fputs("|", file);
     }
     i++;
@@ -177,4 +193,3 @@ void insertTuple(struct Command* cmd) {
   fclose(file);
   return;
 }
-

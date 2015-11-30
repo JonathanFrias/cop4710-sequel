@@ -1,3 +1,11 @@
+wSQLx_project.sdf
+wSQLx_project.sln
+wSQLx_project.vcxproj
+wSQLx_project.vcxproj.filters
+wSQLx_project.vcxproj.user
+Debug/
+*.o
+.vs/
 tags
 out
 *.suo
@@ -16,3 +24,4 @@ Debug/sql.obj
 cop4710-sequel.sdf
 *.idb
 Debug/vc120.pdb
+out

@@ -46,7 +46,7 @@ void testRetrieve(void) {
   // This depends on testStore being run. because reasons!
 
   char names[FIELD_SIZE][NAME_LIMIT] = { "name4", "name2", "name3", "name1", };
-  FieldType types[FIELD_SIZE][1] = { INTEGER, TEXT, DATE, INTEGER, };
+  FieldType types[FIELD_SIZE][1] = { INTEGER_t, TEXT_t, DATE_t, INTEGER_t, };
   struct Field* projection = createFieldList(names, NULL, types, 4);
   struct Command* selectCmd = createSelectCommand("table", projection, NULL);
 
@@ -93,7 +93,7 @@ void testCreateTable(void) {
 
   char values[FIELD_SIZE][VALUE_LIMIT] = { "1", "value2", "1/1/2015", "3", };
 
-  FieldType types[FIELD_SIZE][1] = { INTEGER, TEXT, DATE, INTEGER, };
+  FieldType types[FIELD_SIZE][1] = { INTEGER_t, TEXT_t, DATE_t, INTEGER_t, };
   struct Field* fields = createFieldList(names, values, types, 4);
 
   struct Command* createTableCmd = createCreateTableCommand("bar", fields);
@@ -118,7 +118,7 @@ void testParseGrammer(void) {
   struct Command* command = parseGrammer("SELECT id from table1");
 
   assert(command != 0, "Should not contain a null pointer!");
-  assert(command->commandType == SELECT, "command type should equal select!");
+  assert(command->commandType == SELECT_t, "command type should equal select!");
   assert(strcmp("table1", command->table) == 0, "The table was not set propertly!");
   assert(command->whereConstraints != NULL, "WhereConstraints should have been specified!");
   assert(command->fields != NULL, "Field should not be null!");
@@ -135,7 +135,7 @@ void testStore(void) {
 
   char values[FIELD_SIZE][VALUE_LIMIT] = { "1", "value2", "1/1/2015", "3", };
 
-  FieldType types[FIELD_SIZE][1] = { INTEGER, TEXT, DATE, INTEGER, };
+  FieldType types[FIELD_SIZE][1] = { INTEGER_t, TEXT_t, DATE_t, INTEGER_t, };
 
   struct Field* fields = createFieldList(names, values, types, 4);
   struct Command* createTableCmd = createCreateTableCommand("table",
