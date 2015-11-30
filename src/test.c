@@ -6,6 +6,8 @@ void testStore(void);
 void testParseGrammer(void);
 void testCreateTable(void);
 void testRetrieve(void);
+void testWhere(struct Table* table, struct Command* cmd);
+void testWhereCompare();
 
 // The following method stubs are not implemented!
 // When they are implemented, you can remove them
@@ -27,12 +29,14 @@ bool storeTable(struct Table* table) {
  * This is just the main method!
  */
 int main(void) {
-  printf("===============Create Table:\n");
+  printf("\n===============Create Table:\n");
   testCreateTable();
-  printf("===============Example Table:\n");
 
   printf("\n===============testStore\n");
   testStore();
+
+  printf("\n===============testWhereCompare\n");
+  testWhereCompare();
 
   printf("\n===============testRetrieve\n");
   testRetrieve();
@@ -48,11 +52,14 @@ void testRetrieve(void) {
   char names[FIELD_SIZE][NAME_LIMIT] = { "name4", "name2", "name3", "name1", };
   FieldType types[FIELD_SIZE][1] = { INTEGER, TEXT, DATE, INTEGER, };
   struct Field* projection = createFieldList(names, NULL, types, 4);
-  struct Command* selectCmd = createSelectCommand("table", projection, NULL);
+  struct Field* whereField = createField("name1", "2", INTEGER);
+
+  struct Where* compare = createWhere(whereField, EQUAL);
+  struct Command* selectCmd = createSelectCommand("table", projection, compare);
 
   struct Table* results = retrieve(selectCmd);
 
-  assert(results->count == 2, "Did not retrieve correct number of records");
+  assert(results->count == 1, "Did not retrieve correct number of records");
   assert(strcmp(results->name, "table") == 0, "Table name was not set in the resultset");
 
   assert(strcmp(results->tuples[0].fields[0].name, "name1") == 0 , "Problem with resultset");
@@ -61,24 +68,11 @@ void testRetrieve(void) {
   assert(strcmp(results->tuples[0].fields[3].name, "name4") == 0 , "Problem with resultset");
   assert(results->tuples[0].fields[4].name == 0 , "Problem with resultset"); // make sure null terminated
 
-  assert(strcmp((char*) results->tuples[0].fields[0].value, "1") == 0 , "Problem with resultset");
+  assert(strcmp((char*) results->tuples[0].fields[0].value, "2") == 0 , "Problem with resultset");
   assert(strcmp((char*) results->tuples[0].fields[1].value, "value2") == 0 , "Problem with resultset");
   assert(strcmp((char*) results->tuples[0].fields[2].value, "1/1/2015") == 0 , "Problem with resultset");
   assert(strcmp((char*) results->tuples[0].fields[3].value, "3") == 0 , "Problem with resultset");
   assert(results->tuples[0].fields[4].name == 0 , "Problem with resultset");
-
-
-  assert(strcmp(results->tuples[1].fields[0].name, "name1") == 0 , "Problem with resultset");
-  assert(strcmp(results->tuples[1].fields[1].name, "name2") == 0 , "Problem with resultset");
-  assert(strcmp(results->tuples[1].fields[2].name, "name3") == 0 , "Problem with resultset");
-  assert(strcmp(results->tuples[1].fields[3].name, "name4") == 0 , "Problem with resultset");
-  assert(results->tuples[1].fields[4].name == 0 , "Problem with resultset"); // make sure null terminated
-
-  assert(strcmp((char*) results->tuples[1].fields[0].value, "1") == 0 , "Problem with resultset");
-  assert(strcmp((char*) results->tuples[1].fields[1].value, "value2") == 0 , "Problem with resultset");
-  assert(strcmp((char*) results->tuples[1].fields[2].value, "1/1/2015") == 0 , "Problem with resultset");
-  assert(strcmp((char*) results->tuples[1].fields[3].value, "3") == 0 , "Problem with resultset");
-  assert(results->tuples[1].fields[4].name == 0 , "Problem with resultset");
 
 }
 
@@ -146,6 +140,7 @@ void testStore(void) {
   // test
   struct Command* insertCmd = createInsertCommand("table", fields);
   insertTuple(insertCmd);
+  values[0][0] = '2';
   insertTuple(insertCmd);
 
   // teardown
@@ -187,3 +182,33 @@ struct Table* createExampleTable(int count) {
   snprintf(table->name, sizeof(table->name), "exampleTable");
   return table;
 }
+
+void testWhereCompare() {
+  // Date not implemented yet!
+  // struct Field* dateField = createField("name", "1/1/1990", DATE);
+  struct Field* textField = createField("name", "value", TEXT);
+  struct Field* intField = createField("name", "1", INTEGER);
+
+  struct Where* where1 = createWhere(textField, GREATHER_THAN);
+  struct Where* where2 = createWhere(textField, EQUAL);
+
+  struct Where* where3 = createWhere(intField, EQUAL);
+  struct Where* where4 = createWhere(intField, LESS_THAN);
+  struct Where* where5 = createWhere(intField, GREATHER_THAN_OR_EQ);
+
+  // struct Where* where6 = createWhere(dateField, EQUAL);
+  // struct Where* where7 = createWhere(dateField, LESS_THAN);
+  // struct Where* where8 = createWhere(dateField, GREATHER_THAN);
+
+  assert(!whereCompare(where1), "should be not eq!");
+  assert(whereCompare(where2), "should be eq!");
+
+  assert(whereCompare(where3), "should be eq!");
+  assert(!whereCompare(where4), "should be not eq!");
+  assert(whereCompare(where5), "should be eq!");
+
+  //assert(whereCompare(where3), "should be eq!");
+  //assert(!whereCompare(where4), "should be not eq!");
+  //assert(whereCompare(where5), "should be eq!");
+}
+
