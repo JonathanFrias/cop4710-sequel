@@ -1,5 +1,25 @@
 #include "common.h"
 
+
+//sets command struct for type and tablename
+struct Command* createDropTableCommand(char* tableName){
+  struct Command* cmd = malloc(COMMAND_SIZE);
+  cmd->commandType = DROP_TABLE_t;
+  cmd->table = tableName;
+  return cmd;
+}
+
+//sets command struct for database name to be removed from "out" (using command->table as database name)
+struct Command* createDropDatabaseCommand(char* databaseName)
+{
+  struct Command* cmd = malloc(COMMAND_SIZE);
+  cmd->commandType = DROP_DATABASE_t;
+  cmd->table = databaseName;
+  return cmd;
+}
+
+
+
 struct Field* createField(char* name, char* value, whereType type) {
 
   // MUST USE CALLOC, not MALLOC!
@@ -177,13 +197,15 @@ void insertTuple(struct Command* cmd) {
   char tablePath[PATH_SIZE];
 
   snprintf(tablePath, sizeof(tablePath), "%s/%s/%s", DATABASE_DIR, currentDatabase, cmd->table);
-
+  
+  printf("about to open file\n");
   FILE* file = fopen(tablePath, "a");
+  printf("opened file\n");
 
   int i = 0;
-  while(cmd->fields[i]->name != NULL) {
+  while(cmd->fields[i] != NULL) {
     fputs((char*) cmd->fields[i]->value, file);
-    if(cmd->fields[i+1]->name != NULL) {
+    if(cmd->fields[i+1] != NULL) {
       fputs("|", file);
     }
     i++;

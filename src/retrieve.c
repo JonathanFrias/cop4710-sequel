@@ -34,7 +34,7 @@ struct Table* retrieve(struct Command* command) {
 
     char* name = malloc(NAME_LIMIT);
     snprintf(name, NAME_LIMIT, "%s", fieldName);
-    strcpy((recordFields+i)->name, name);
+    (recordFields+i)->name = name;
     (recordFields+i)->fieldType = type;
     i++;
   } while((fieldName = strtok(NULL, "|")) != NULL);
@@ -53,9 +53,9 @@ struct Table* retrieve(struct Command* command) {
       char* valueStorage = malloc(VALUE_LIMIT);
       snprintf(valueStorage, VALUE_LIMIT, "%s", value);
 
-      strcpy((recordFields+fieldIndex)->name, (recordFields+currentField)->name);
+      (recordFields+fieldIndex)->name = (recordFields+currentField)->name;
       (recordFields+fieldIndex)->fieldType = (recordFields+currentField)->fieldType;
-      strcpy((recordFields+fieldIndex)->value, valueStorage);
+      (recordFields+fieldIndex)->value = valueStorage;
       currentField++;
     } while((value = strtok(NULL, "|")) != NULL);
     currentField++;

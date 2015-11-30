@@ -15,3 +15,6 @@ struct Tuple* createTuple(struct Field* fields);
 struct Tuple* createTupleList(struct Field* fields, int count);
 void destroyCommand(struct Command*);
 void insertTuple(struct Command* cmd);
+struct Command* createDropDatabaseCommand(char* databaseName);
+struct Command* createDropTableCommand(char*);
+

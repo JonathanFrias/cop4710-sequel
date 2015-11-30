@@ -51,11 +51,11 @@ void createTable(struct Command* command) {
   FILE* tableFile = fopen(tablePath, "w");
 
   int i = 0;
-
-  char headerLine[HEADER_SIZE];
-  char tmpLine[HEADER_SIZE];
-
-  while((*(command->fields+i))->name != NULL) {
+  
+  char headerLine[HEADER_SIZE]="";
+  char tmpLine[HEADER_SIZE]="";
+  
+  while(command->fields[i] != NULL) {
     char name[NAME_LIMIT] = "";
     char type = command->fields[i]->fieldType;
     snprintf(name, sizeof(name), "%s", command->fields[i]->name);

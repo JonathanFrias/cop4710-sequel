@@ -1,8 +1,8 @@
 # output directory
 COMPILE_DIR := out
 SRC_DIR := src
-SRC_FIlES := src/assert.c src/store.c src/commandHelpers.c src/retrieve.c src/remove.c 
-OUT_FILES := $(COMPILE_DIR)/lex.yy.o $(COMPILE_DIR)/sql.tab.o $(COMPILE_DIR)/sql.o $(COMPILE_DIR)/commandHelpers.o $(COMPILE_DIR)/assert.o $(COMPILE_DIR)/store.o $(COMPILE_DIR)/retrieve.o $(COMPILE_DIR)/remove.o
+SRC_FIlES := src/assert.c src/store.c src/commandHelpers.c src/retrieve.c
+OUT_FILES := $(COMPILE_DIR)/lex.yy.o $(COMPILE_DIR)/sql.tab.o $(COMPILE_DIR)/sql.o $(COMPILE_DIR)/commandHelpers.o $(COMPILE_DIR)/assert.o $(COMPILE_DIR)/store.o $(COMPILE_DIR)/retrieve.o $(COMPILE_DIR)/drop.o
 
 .PHONY: test clean parse
 
@@ -12,11 +12,11 @@ test: src/test.c
 	cc src/test.c src/assert.c src/store.c src/commandHelpers.c src/retrieve.c  -pedantic -Wall -Wno-unused-parameter -Wno-missing-braces -Wextra -Wuninitialized -g -std=gnu99 -o $(COMPILE_DIR)/test
 
 clean:
-	rm $(COMPILE_DIR)/sql.tab.h $(COMPILE_DIR)/sql.tab.c $(COMPILE_DIR)/lexer.h $(COMPILE_DIR)/*.o  $(COMPILE_DIR)/lex.yy.c $(COMPILE_DIR)/all
+	rm $(COMPILE_DIR)/sql.tab.h $(COMPILE_DIR)/sql.tab.c $(COMPILE_DIR)/lexer.h $(COMPILE_DIR)/*.o  $(COMPILE_DIR)/lex.yy.c $(COMPILE_DIR)/wSQLx
 
 
-all: lex.yy.o sql.tab.o sql.o commandHelpers.o assert.o store.o retrieve.o remove.o
-	cc -o $(COMPILE_DIR)/all $(OUT_FILES) 
+wSQLx: lex.yy.o sql.tab.o sql.o commandHelpers.o assert.o store.o retrieve.o drop.o
+	cc -o $(COMPILE_DIR)/wSQLx -g -std=gnu99 $(OUT_FILES) 
 
 sql.o: sql.c 
 	cc -c sql.c -o $(COMPILE_DIR)/sql.o
@@ -45,5 +45,5 @@ store.o: $(SRC_DIR)/store.c
 retrieve.o: $(SRC_DIR)/retrieve.c
 	cc -c $(SRC_DIR)/retrieve.c -o $(COMPILE_DIR)/retrieve.o -std=gnu99
 
-remove.o: $(SRC_DIR)/remove.c
-	cc -c $(SRC_DIR)/remove.c -o $(COMPILE_DIR)/remove.o -std=gnu99
+drop.o: $(SRC_DIR)/drop.c 
+	cc -c $(SRC_DIR)/drop.c -o $(COMPILE_DIR)/drop.o -std=gnu99

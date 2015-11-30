@@ -111,3 +111,6 @@ void computePadding(char*, char*, int);
 int getRecordCount(FILE* file);
 int getFieldCount(char* buffer, int size);
 int yyparse(void);
+void dropDatabase(struct Command * removeCommand);
+void dropTable(struct Command * removeTableCommand);
+void printTable(struct Table* table);
