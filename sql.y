@@ -1,4 +1,4 @@
-%{ 
+%{
 #include "/home/nickjones67/Documents/cop4710-sequel/src/common.h"
 #include "/home/nickjones67/Documents/cop4710-sequel/src/commandHelpers.h"
 
@@ -22,25 +22,25 @@ char this_literal[140];
 %}
 
 %start START
-%token ID 
-%token CREATE DROP LOAD SAVE DATABASE TABLE INSERT INTO FROM 
+%token ID
+%token CREATE DROP LOAD SAVE DATABASE TABLE INSERT INTO FROM
 %token WHERE SET DELETE UPDATE SELECT WSELECT VALUES
 %token DEC INT STR DATETYPE DATE NUMBER CHARACTER INTEGER
-%token LT GT LTEQ GTEQ EQ EQEQ NOTEQ 
+%token LT GT LTEQ GTEQ EQ EQEQ NOTEQ
 %token RP LP COMMA SEMIC AST
 
 
 
 %%
-START          : COMMAND_LIST 
-                     
-COMMAND_LIST   : COMMAND { printf("Query Accepted\n"); } COMMAND_LIST2 
- 
-COMMAND_LIST2  : COMMAND COMMAND_LIST2  
-	       | /* EMPTY */ 
+START          : COMMAND_LIST
 
-COMMAND        : SYSTEM_COMMAND 
-	       | DDL_COMMAND 
+COMMAND_LIST   : COMMAND { printf("Query Accepted\n"); } COMMAND_LIST2
+
+COMMAND_LIST2  : COMMAND COMMAND_LIST2
+	       | /* EMPTY */
+
+COMMAND        : SYSTEM_COMMAND
+	       | DDL_COMMAND
 	       | DML_COMMAND
 
 SYSTEM_COMMAND : CREATE_DATABASE_COMMAND
@@ -69,19 +69,19 @@ CREATE_TABLE_COMMAND    : CREATE TABLE ID { strcpy(tblBuf, yytext); } LP FIELD_D
 
 DROP_TABLE_COMMAND      : DROP TABLE ID { strcpy(tblBuf, yytext); } SEMIC { /* cmd=createDropTableCommand(), pass command, destroy command */ }
 
-INSERT_INTO_COMMAND     : INSERT INTO ID { strcpy(tblBuf, yytext); } INSERT_INTO_COMMAND2 
+INSERT_INTO_COMMAND     : INSERT INTO ID { strcpy(tblBuf, yytext); } INSERT_INTO_COMMAND2
 
 INSERT_INTO_COMMAND2    : LP FIELD_LIST RP VALUES LP LITERAL_LIST RP SEMIC { cmd = createInsertCommand(tblBuf, this_field_array); for(i=0; i<field_count; i++){this_field_array[i]=NULL;} literal_count=0; field_count=0; destroyCommand(cmd); }
                         | VALUES LP LITERAL_LIST RP SEMIC { cmd = createInsertCommand(tblBuf, this_field_array); for(i=0; i<literal_count; i++){this_field_array[i]=NULL;} literal_count=0; destroyCommand(cmd); }
 
 DELETE_FROM_COMMAND     : DELETE FROM ID { strcpy(tblBuf, yytext); } DELETE_FROM_COMMAND2
 
-DELETE_FROM_COMMAND2    : WHERE CONDITION SEMIC { /* cmd=createDeleteFromCommand(), pass command, delete command */ } 
-			| SEMIC { /* cmd=createDeleteFromCommand(), pass command, delete command */ } 
+DELETE_FROM_COMMAND2    : WHERE CONDITION SEMIC { /* cmd=createDeleteFromCommand(), pass command, delete command */ }
+			| SEMIC { /* cmd=createDeleteFromCommand(), pass command, delete command */ }
 
 UPDATE_COMMAND          : UPDATE ID { strcpy(tblBuf, yytext); } SET ID { strcpy(fieldBuf, yytext);  } EQ LITERAL { strcpy(this_field_array[i]->name, fieldBuf); strcpy(this_field_array[i]->value, this_literal); field_count++; } UPDATE_COMMAND2 { for(i=0; i<field_count; i++){this_field_array[i]=NULL;} field_count=0; }
 
-UPDATE_COMMAND2         : COMMA ID { strcpy(fieldBuf, yytext); } EQ LITERAL { strcpy(this_field_array[i]->name, fieldBuf); strcpy(this_field_array[i]->value, this_literal); field_count++; } UPDATE_COMMAND2     
+UPDATE_COMMAND2         : COMMA ID { strcpy(fieldBuf, yytext); } EQ LITERAL { strcpy(this_field_array[i]->name, fieldBuf); strcpy(this_field_array[i]->value, this_literal); field_count++; } UPDATE_COMMAND2
                         | UPDATE_COMMAND3
 
 UPDATE_COMMAND3         : WHERE CONDITION SEMIC { /* cmd=createUpdateCommand(), pass command, destroy command */ }
@@ -94,38 +94,38 @@ W_SELECT_COMMAND        : WSELECT W_SELECT_COMMAND2
 W_SELECT_COMMAND2       : AST { strcpy(this_field_array[0]->name, "ALL");  } FROM ID { strcpy(tblBuf, yytext); } W_SELECT_COMMAND3
                         | LP FIELD_LIST RP FROM ID { strcpy(tblBuf, yytext); } W_SELECT_COMMAND3
 
-W_SELECT_COMMAND3       : WHERE CONDITION SEMIC { cmd=createWSelectCommand(tblBuf, this_field_array, this_where); destroyCommand(cmd); } 
+W_SELECT_COMMAND3       : WHERE CONDITION SEMIC { cmd=createWSelectCommand(tblBuf, this_field_array, this_where); destroyCommand(cmd); }
 		        | SEMIC { this_where->compareType=EQUAL; cmd=createWSelectCommand(tblBuf, this_field_array, this_where); /* pass command, destroy command */ }
 
 FIELD_DEF_LIST 		: FIELD_DEF { this_field_array[field_count]=this_field; field_count++; } FIELD_DEF_LIST2 { for(i=0; i<field_count; i++){this_field_array[i]=NULL;} field_count=0; }
 
-FIELD_DEF_LIST2 	: COMMA FIELD_DEF { this_field_array[field_count]=this_field; field_count++; } FIELD_DEF_LIST2 
-	        	| /* EMPTY */ 
+FIELD_DEF_LIST2 	: COMMA FIELD_DEF { this_field_array[field_count]=this_field; field_count++; } FIELD_DEF_LIST2
+	        	| /* EMPTY */
 
 FIELD_DEF 		: ID { strcpy(fieldBuf, yytext); } FIELD_TYPE { strcpy(this_field->name, fieldBuf); this_field->fieldType=this_field_type; }
 
-FIELD_LIST 		: ID { strcpy(this_field_array[field_count]->name, yytext); field_count++; } FIELD_LIST2 
+FIELD_LIST 		: ID { strcpy(this_field_array[field_count]->name, yytext); field_count++; } FIELD_LIST2
 
-FIELD_LIST2 		: COMMA ID { strcpy(this_field_array[field_count]->name, yytext); field_count++; } FIELD_LIST2 
-	    		| /* EMPTY */ 
+FIELD_LIST2 		: COMMA ID { strcpy(this_field_array[field_count]->name, yytext); field_count++; } FIELD_LIST2
+	    		| /* EMPTY */
 
-FIELD_TYPE              : INTEGER { this_field_type=INTEGER_t; } 
+FIELD_TYPE              : INTEGER { this_field_type=INTEGER_t; }
                         | CHARACTER { this_field_type=TEXT_t; }
 			| DATE { this_field_type=DATE_t; }
 
 LITERAL_LIST            : LITERAL { strcpy(this_field_array[literal_count]->value, this_literal); literal_count++; } LITERAL_LIST2
 
-LITERAL_LIST2           : COMMA LITERAL { strcpy(this_field_array[literal_count]->value, this_literal); literal_count++; } LITERAL_LIST2 
+LITERAL_LIST2           : COMMA LITERAL { strcpy(this_field_array[literal_count]->value, this_literal); literal_count++; } LITERAL_LIST2
 		        | /* EMPTY */
 
-LITERAL                 : INT { strcpy(this_literal, yytext); } 
+LITERAL                 : INT { strcpy(this_literal, yytext); }
 			| STR { strcpy(this_literal, yytext); }
 			| DATETYPE { strcpy(this_literal, yytext); }
 
-CONDITION               : ID { strcpy(fieldBuf, yytext); } COMP LITERAL {this_where=createWhere(createField(fieldBuf, "NULL", TEXT_t), this_compare_type); this_where->target=yytext; }  
+CONDITION               : ID { strcpy(fieldBuf, yytext); } COMP LITERAL {this_where=createWhere(createField(fieldBuf, "NULL", TEXT_t), this_compare_type); this_where->target=yytext; }
 
-COMP                    : LT { this_compare_type=LESS_THAN; } 
-			| GT { this_compare_type=GREATER_THAN; } 
+COMP                    : LT { this_compare_type=LESS_THAN; }
+			| GT { this_compare_type=GREATER_THAN; }
 			| EQEQ { this_compare_type=EQUAL; }
 			| LTEQ { this_compare_type=LESS_THAN_OR_EQ; }
 			| GTEQ { this_compare_type=GREATER_THAN_OR_EQ; }
@@ -139,4 +139,4 @@ yyerror() {
 
 yywrap() {
   printf("\n");
-}
+
