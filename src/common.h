@@ -24,23 +24,24 @@
 // Defines what database we're currently working on
 char* currentDatabase;
 
-enum field_t {
+typedef enum {
   INTEGER_t = 'I', // Integer [(max_left)]
-  NUMBER_t = 'N', // Number [(max_left[,max_right])]
   DATE_t = 'D', // Date mm/dd/yyyy
   TEXT_t = 'T' // Character (max_left)
-};
+} FieldType;
 
+/*
 struct FieldType {
   enum field_t ft;
   int max_left; // max allowed characters (left of decimal if number)
   int max_right; // max allowed characters to the right of decimal (only for number)
-}; 
+};
+*/ 
 
 struct Field {
-  char name[30];
-  char value[120];
-  struct FieldType* field_type;
+  char* name;
+  char* value;
+  FieldType fieldType;
 };
 
 struct Tuple {
@@ -49,19 +50,19 @@ struct Tuple {
   int updatedAt;
 };
 
-enum whereCompare {
+typedef enum whereType {
   LESS_THAN,
-  LESS_THAN_EQUALS,
+  LESS_THAN_OR_EQ,
   GREATER_THAN,
-  GREATER_THAN_EQUALS,
-  EQUALS, 
-  NOT_EQUALS,
-};
+  GREATER_THAN_OR_EQ,
+  EQUAL, 
+  NOT_EQUAL,
+} whereType;
 
 struct Where {
-  char field[30];
-  char target[140];
-  enum whereCompare compareType;
+  struct Field* field;
+  void* target;
+  enum whereType compareType;
 };
 
 /*
@@ -85,7 +86,7 @@ struct Command {
     UPDATE_t,
     DELETE_t
   } commandType;
-  char table[23]; // name of table
+  char* table; // name of table
   struct Field* fields[50];
   struct Where* whereConstraints;
 };

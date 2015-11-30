@@ -6,7 +6,6 @@
 struct Command* cmd;
 struct Tuple* this_tuple;
 struct Where* this_where;
-struct FieldType* this_field_type;
 struct Field* this_field;
 struct Field* this_field_array[50];
 
@@ -19,7 +18,6 @@ int main(void)
 	cmd = malloc(sizeof(struct Command));
 	this_tuple = malloc(sizeof(struct Tuple));
 	this_where = malloc(sizeof(struct Where));
-	this_field_type = malloc(sizeof(struct FieldType));
 	this_field = malloc(sizeof(struct Field));
 	for (i=0; i<50; i++) {
 		this_field_array[i] = malloc(sizeof(struct Field));

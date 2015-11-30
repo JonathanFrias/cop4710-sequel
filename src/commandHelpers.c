@@ -1,31 +1,31 @@
 #include "common.h"
 
-struct Field* createField(char name[30], char value[120]) {
+struct Field* createField(char* name, char* value, whereType type) {
+
   // MUST USE CALLOC, not MALLOC!
   struct Field* field = (struct Field*) calloc(2, sizeof(struct Field));
 
   if(name) {
-    strcpy(field->name, name);
+    field->name = name;
   } else {
-    strcpy(field->name, "field_name");
+    field->name = "field_name";
   }
 
   if(value) {
-    strcpy(field->value, value);
+    field->value = value;
   } else {
-    strcpy(field->value, "field_value");
+    field->value = "field_value";
   }
 
+  field->fieldType = type;
   return field;
 }
 
-/*
-struct Field* createFieldList(char* names, char* values, struct FieldType types[FIELD_SIZE][1], int count) {
+struct Field* createFieldList(char* names, char* values, FieldType types[FIELD_SIZE][1], int count) {
   // Must use CALLOC instead of MALLOC
-  // because field list should be NULL TERMINATED! 
-  int i;
+  // because field list should be NULL TERMINATED!
   struct Field* fieldList = calloc(count+1, FIELD_SIZE);
-  for(i = 0; i < count; i++) {
+  for(int i = 0; i < count; i++) {
     (fieldList+i)->name = (names+(i*NAME_LIMIT));
 
     if(values) {
@@ -36,52 +36,55 @@ struct Field* createFieldList(char* names, char* values, struct FieldType types[
 
   return fieldList;
 }
-*/
 
-struct Where* createWhere(char field[30], enum whereCompare compareType) {
-  struct Where* whereCondition = malloc(WHERE_SIZE);
+struct Where* createWhere(struct Field* field, whereType compareType) {
+  struct Where* whereCondition = calloc(2, sizeof(struct Where));
 
   if(field) {
-    strcpy(whereCondition->field, field);
+    whereCondition->field = field;
   } else {
-    strcpy(whereCondition->field, "WhereCondname");
+    whereCondition->field = createField("WhereCondname", "WhereCondValue", TEXT_t);
   }
+  whereCondition->target = field->value;
+  whereCondition->compareType = compareType;
   return whereCondition;
 }
 
-// projection is array of field names. Need to create a helper to retrieve the field type
-struct Command* createSelectCommand(char* table) {
+struct Command* createSelectCommand(char* table, struct Field* projection[50], struct Where* whereConstraints) {
+  int i;
+
   struct Command* cmd = malloc(COMMAND_SIZE);
 
   cmd->commandType = SELECT_t;
 
   if(table) {
-    strcpy(cmd->table, table);
+    cmd->table = table;
   } else {
-    strcpy(cmd->table, "default_table");
+    cmd->table = "default_table";
   }
 
-/*
   if(projection) {
-    cmd->fields = projection;
+    for(i=0; i<50; i++)
+      cmd->fields[i] = projection[i];
   } else {
-    cmd->fields = createField("selectName", "selectVal");
+      for(i=0; i<50; i++)
+        cmd->fields[i] = createField("selectName", "selectVal", TEXT_t);
   }
-*/
+  cmd->whereConstraints = whereConstraints;
 
   return cmd;
 }
 
 struct Command* createWSelectCommand(char* table, struct Field* projection[50], struct Where* whereConstraints) {
-
-  struct Command* cmd = malloc(COMMAND_SIZE);
   int i;
+  struct Command* cmd = malloc(COMMAND_SIZE);
+
   cmd->commandType = wSELECT_t;
 
   if(table) {
-    strcpy(cmd->table, table);
+    cmd->table = table;
   } else {
-    strcpy(cmd->table, "default_table");
+    cmd->table = "default_table";
   }
 
   if(projection) {
@@ -89,7 +92,7 @@ struct Command* createWSelectCommand(char* table, struct Field* projection[50], 
       cmd->fields[i] = projection[i];
   } else {
     for(i=0; i<50; i++)
-      cmd->fields[i] = createField("selectName", "selectVal");
+      cmd->fields[i] = createField("selectName", "selectVal", TEXT_t);
   }
   return cmd;
 }
@@ -97,19 +100,19 @@ struct Command* createWSelectCommand(char* table, struct Field* projection[50], 
 struct Command* createCreateDatabaseCommand(char* databaseName) {
   struct Command* cmd = malloc(COMMAND_SIZE);
   cmd->commandType = CREATE_DATABASE_t;
-  strcpy(cmd->table, databaseName);
+  cmd->table = databaseName;
   return cmd;
 }
 
 struct Command* createCreateTableCommand(char* table,
     struct Field* fields[50]) {
-  struct Command* cmd = malloc(COMMAND_SIZE);
   int i;
 
+  struct Command* cmd = malloc(COMMAND_SIZE);
   cmd->commandType = CREATE_TABLE_t;
   for(i=0; i<50; i++)
     cmd->fields[i] = fields[i];
-  strcpy(cmd->table, table);
+  cmd->table = table;
   return cmd;
 }
 
@@ -119,7 +122,7 @@ struct Tuple* createTuple(struct Field* fields) {
   if(fields) {
     result->fields = fields;
   } else {
-    result->fields = createField("createTuple", "createValue1");
+    result->fields = createField("createTuple", "createValue1", TEXT_t);
   }
 
   return result;
@@ -127,13 +130,12 @@ struct Tuple* createTuple(struct Field* fields) {
 
 struct Tuple* createTupleList(struct Field* fields, int count) {
   struct Tuple* results = calloc(count+1, sizeof(struct Tuple));
-  
-  int i;
-  for(i = 0; i < count; i++) {
+
+  for(int i = 0; i < count; i++) {
     if(fields) {
       results[i].fields = fields;
     } else {
-      results[i].fields = createField("createTuple", "createValue1");
+      results[i].fields = createField("createTuple", "createValue1", TEXT_t);
     }
   }
 
@@ -141,26 +143,25 @@ struct Tuple* createTupleList(struct Field* fields, int count) {
 }
 
 struct Command* createInsertCommand(char* table, struct Field* fields[50]) {
-  struct Command* command = malloc(sizeof(struct Command));
   int i;
 
+  struct Command* command = malloc(sizeof(struct Command));
   command->commandType = INSERT_t;
-  for(i=0; i<50; i++)
+  for (i=0; i<50; i++)
     command->fields[i] = fields[i];
-  strcpy(command->table, table);
+  command->table = table;
 
   return command;
 }
 
 void destroyCommand(struct Command* cmd) {
-  int i;
+
   assert(cmd, "Cannot destroy invalid cmd");
 
   switch(cmd->commandType) {
     case CREATE_TABLE_t:
       if(cmd->fields) {
-        for(i=0; i<50; i++)
-          free(cmd->fields[i]);
+        free(cmd->fields);
       }
     case CREATE_DATABASE_t:
     default:
@@ -192,16 +193,3 @@ void insertTuple(struct Command* cmd) {
   fclose(file);
   return;
 }
-
-struct FieldType* createFieldType(enum field_t this_ft, int ml, int mr)
-{
-  struct FieldType* fldtyp = malloc(sizeof(struct FieldType));
-  fldtyp->ft = this_ft;
-  fldtyp->max_left = ml;
-  fldtyp->max_right = mr;
-
-  return fldtyp;
-}
-
-
-

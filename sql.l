@@ -44,8 +44,8 @@ Other	     [-!@#$%&+:"~`]
 [Dd][Aa][Tt][Ee]			 {printf("token: DATE\n");return(DATE);}
 [a-zA-Z][a-zA-Z0-9_]*			 {printf("token: ID %s\n", yytext);return(ID);}
 "*"                      {printf("token: AST\n");return(AST);}
-"("                      {printf("token: RP\n");return(LP);}
-")"                      {printf("token: LP\n");return(RP);}
+"("                      {printf("token: LP\n");return(LP);}
+")"                      {printf("token: RP\n");return(RP);}
 ","                      {printf("token: COMMA\n");return(COMMA);}
 "<"                      {printf("token: LT\n");return(LT);}
 ">"                      {printf("token: GT\n");return(GT);}
