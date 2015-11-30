@@ -1,4 +1,4 @@
-void assert(bool value, char* errorMsg);
+#include "common.h"
 
 void assert(bool val, char* msg) {
   if(!val) {

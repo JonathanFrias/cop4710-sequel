@@ -1,1 +1,10 @@
+wSQLx_project.sdf
+wSQLx_project.sln
+wSQLx_project.vcxproj
+wSQLx_project.vcxproj.filters
+wSQLx_project.vcxproj.user
+Debug/
+*.o
+.vs/
+tags
 out
