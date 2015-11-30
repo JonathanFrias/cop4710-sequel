@@ -25,18 +25,10 @@
 char* currentDatabase;
 
 typedef enum {
-  INTEGER_t = 'I', // Integer [(max_left)]
-  DATE_t = 'D', // Date mm/dd/yyyy
-  TEXT_t = 'T' // Character (max_left)
+  INTEGER_t = 'I',
+  DATE_t = 'D',
+  TEXT_t = 'T',
 } FieldType;
-
-/*
-struct FieldType {
-  enum field_t ft;
-  int max_left; // max allowed characters (left of decimal if number)
-  int max_right; // max allowed characters to the right of decimal (only for number)
-};
-*/ 
 
 struct Field {
   char* name;
@@ -55,7 +47,7 @@ typedef enum whereType {
   LESS_THAN_OR_EQ,
   GREATER_THAN,
   GREATER_THAN_OR_EQ,
-  EQUAL, 
+  EQUAL,
   NOT_EQUAL,
 } whereType;
 
@@ -87,7 +79,7 @@ struct Command {
     DELETE_t
   } commandType;
   char* table; // name of table
-  struct Field* fields[50];
+  struct Field* fields;
   struct Where* whereConstraints;
 };
 
