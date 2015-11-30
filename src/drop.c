@@ -9,11 +9,10 @@ void dropDatabase(struct Command * removeCommand)
   assert(removeCommand->commandType == DROP_DATABASE, "Incompatible Command commanType to function dropDatabase");
   //create a pathname buffer
   char folderPath[NAME_LIMIT];
-  //getcwd(folderPath, sizeof(folderPath));
   //format pathname for directory and "table" name
-  sprintf(folderPath, "out/%s", removeCommand->table);
-  //call remove directory with pathname to table
-  rmdir(folderPath);
+  sprintf(folderPath, "%s/%s", DATABASE_DIR, removeCommand->table);
+  assert(rmdir(folderPath) == 0, "directory drop failed, directory not empty or does not exist");
+  
 } 
 
 void dropTable(struct Command* removeTableCommand)
@@ -24,7 +23,7 @@ void dropTable(struct Command* removeTableCommand)
   char folderPath[NAME_LIMIT];
   //getcwd(folderPath, sizeof(folderPath));
 //uses current database directory to drop a table
-  sprintf(folderPath, "%s/%s", DATABASE_DIR, removeTableCommand->table);
+  sprintf(folderPath, "%s/%s/%s", DATABASE_DIR, currentDatabase, removeTableCommand->table);
 
-  rmdir(folderPath);
+ assert(unlink(folderPath) == 0, "failed to remove table");
 }

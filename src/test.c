@@ -31,19 +31,20 @@ bool storeTable(struct Table* table) {
 int main(void) {
   printf("===============Create Table:\n");
   testCreateTable();
+  printf("%s is current\n", currentDatabase);
   printf("===============Example Table:\n");
 
   printf("\n===============testStore\n");
   testStore();
 
-  printf("\n================testDropDB\n");
-  testDropDB();
+  printf("\n===============testRetrieve\n");
+  testRetrieve();
 
   printf("\n=================testDropTbl\n");
   testDropTable();
-
-  printf("\n===============testRetrieve\n");
-  testRetrieve();
+  
+  printf("\n=================testDropDB\n");
+  testDropDB();
 
   printf("\n===============testParseGrammer\n");
   testParseGrammer();
@@ -92,16 +93,20 @@ void testRetrieve(void) {
 
 void testDropDB(void)
 {
-
-  struct Command* dropDBCommand = createDropDatabaseCommand("databases2");
+  system("mkdir -p out/databases/test_drop");
+  struct Command* dropDBCommand = createDropDatabaseCommand("test_drop");
   dropDatabase(dropDBCommand);
 //cleanup
   destroyCommand(dropDBCommand);
 }
-
+//drop table needs a pathname from the tabe dir in 
+//databases to the table contained within.
 void testDropTable()
 {
-  struct Command* dropTblCommand = createDropTableCommand("test_drop");
+  currentDatabase = "test_drop";
+  system("mkdir -p out/databases/test_drop");
+  system("touch out/databases/test_drop/data");
+  struct Command* dropTblCommand = createDropTableCommand("data");
   dropTable(dropTblCommand);
 //cleanup
   destroyCommand(dropTblCommand); 
