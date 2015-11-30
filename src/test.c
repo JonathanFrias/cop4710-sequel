@@ -8,6 +8,7 @@ void testCreateTable(void);
 void testRetrieve(void);
 void testWhere(struct Table* table, struct Command* cmd);
 void testWhereCompare();
+void testUpdate();
 
 // The following method stubs are not implemented!
 // When they are implemented, you can remove them
@@ -15,14 +16,6 @@ void testWhereCompare();
 // common header file!
 struct Command* parseGrammer(char* sql) {
   return NULL;
-}
-
-bool storeTuples(char* table, struct Tuple* tuples, int count) {
-  return false;
-}
-
-bool storeTable(struct Table* table) {
-  return false;
 }
 
 /*
@@ -41,6 +34,9 @@ int main(void) {
   printf("\n===============testRetrieve\n");
   testRetrieve();
 
+  printf("\n===============testUpdate\n");
+  testUpdate();
+
   printf("\n===============testParseGrammer\n");
   testParseGrammer();
   return 0;
@@ -57,7 +53,8 @@ void testRetrieve(void) {
   struct Where* compare = createWhere(whereField, EQUAL);
   struct Command* selectCmd = createSelectCommand("table", projection, compare);
 
-  struct Table* results = retrieve(selectCmd);
+  struct Tuple* filtered = NULL;
+  struct Table* results = retrieve(selectCmd, filtered);
 
   assert(results->count == 1, "Did not retrieve correct number of records");
   assert(strcmp(results->name, "table") == 0, "Table name was not set in the resultset");
@@ -73,7 +70,6 @@ void testRetrieve(void) {
   assert(strcmp((char*) results->tuples[0].fields[2].value, "1/1/2015") == 0 , "Problem with resultset");
   assert(strcmp((char*) results->tuples[0].fields[3].value, "3") == 0 , "Problem with resultset");
   assert(results->tuples[0].fields[4].name == 0 , "Problem with resultset");
-
 }
 
 void testCreateTable(void) {
@@ -164,8 +160,8 @@ struct Table* createExampleTable(int count) {
     tuples[i].fields = primaryKeyField;
     tuples[i].primaryKey = primaryKeyField;
 
-    char* name = malloc(sizeof(char)*12);
     char* value = malloc(sizeof(char)*12);
+    char* name = malloc(sizeof(char)*12);
 
     // initialize name and value variables
     sprintf(name, "name%d", i);
@@ -210,4 +206,18 @@ void testWhereCompare() {
   //assert(whereCompare(where3), "should be eq!");
   //assert(!whereCompare(where4), "should be not eq!");
   //assert(whereCompare(where5), "should be eq!");
+}
+
+void testUpdate(void) {
+  char names[FIELD_SIZE][NAME_LIMIT] = { "name1", "name2", "name3", "name4", };
+  char values[FIELD_SIZE][VALUE_LIMIT] = { "3", "value3", "1/1/2015", "3", };
+  FieldType types[FIELD_SIZE][1] = { INTEGER, TEXT, DATE, INTEGER, };
+  struct Field* fields = createFieldList(names, values, types, 4);
+  struct Command* insertCmd = createInsertCommand("table", fields);
+  insertTuple(insertCmd);
+
+  struct Field* updateField = createField("name4", "10", INTEGER);
+  struct Where* where = createWhere(createField("name1", "2", INTEGER), EQUAL);
+  struct Command* cmd = createUpdateCommand("table", updateField, where);
+  update(cmd);
 }

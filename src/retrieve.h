@@ -1,5 +1,5 @@
 
-void applyWhere(struct Table* table, struct Command* cmd, int fieldCount);
+void applyWhere(struct Table* table, struct Command* cmd, struct Tuple* filtered, int fieldCount);
 
 int comparator(const void *, const void*);
 bool textLt(char* a, char* b);

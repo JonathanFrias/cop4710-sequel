@@ -71,6 +71,20 @@ struct Command* createSelectCommand(char* table, struct Field* projection, struc
   return cmd;
 }
 
+struct Command* createUpdateCommand(char* table,
+    struct Field* fieldsToUpdate,
+    struct Where* whereConstraints) {
+  struct Command* cmd = malloc(COMMAND_SIZE);
+  cmd->commandType = UPDATE;
+
+  assert(table, "table is required");
+
+  cmd->table = table;
+  cmd->fields = fieldsToUpdate;
+  cmd->whereConstraints = whereConstraints;
+  return cmd;
+}
+
 struct Command* createWSelectCommand(char* table, struct Field* projection, struct Where* whereConstraints) {
 
   struct Command* cmd = malloc(COMMAND_SIZE);

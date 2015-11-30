@@ -1,7 +1,7 @@
 #include "common.h"
 #include "retrieve.h"
 
-struct Table* retrieve(struct Command* command) {
+struct Table* retrieve(struct Command* command, struct Tuple* filtered) {
 
   // get table location
   char tablePath[PATH_SIZE];
@@ -68,7 +68,9 @@ struct Table* retrieve(struct Command* command) {
   table->count = recordCount;
   snprintf(table->name, sizeof(table->name), "%s", command->table);
   fclose(file);
-  applyWhere(table, command, fieldCount);
+
+  applyWhere(table, command, filtered, fieldCount);
+  table->fieldCount = fieldCount;
   return table;
 }
 
@@ -102,11 +104,7 @@ int tupleComparator(const void* first, const void* second) {
   struct Tuple* t1 = (struct Tuple*) first;
   struct Tuple* t2 = (struct Tuple*) second;
 
-  if(t1->fields == 0 || t2->fields == 0) {
-    return 1;
-  } else {
-    return -1;
-  }
+  return t1->fields < t2->fields;
 }
 
 bool whereCompare(struct Where* compare) {
@@ -168,7 +166,6 @@ bool whereCompare(struct Where* compare) {
   return false;
 }
 
-
 bool textLt(char* a, char* b) {
   return strcmp(a, b) < 0;
 }
@@ -193,13 +190,15 @@ bool intGt(char* a, char* b) {
   return atoi(a) > atoi(b);
 }
 
-void applyWhere(struct Table* table, struct Command* cmd, int fieldCount) {
+void applyWhere(struct Table* table, struct Command* cmd, struct Tuple* filtered, int fieldCount) {
   if(!cmd->whereConstraints) {
     return;
   }
+  int filterIndex = 0;
   int size = table->count;
-  // compare every field of every record, against every whereConstraint
-  for(int i = 0; i < table->count; i++) {
+  // compare every field of every record, against every whereConstraint.
+  // This is !super pro.
+  for(int i = 0; i < size; i++) {
     for(int j = 0; j < fieldCount; j++) {
       struct Where* where = NULL;
       int k = 0;
@@ -209,12 +208,12 @@ void applyWhere(struct Table* table, struct Command* cmd, int fieldCount) {
         char* value = table->tuples[i].fields[j].value;
         if(strcmp(name, where->field->name) == 0) {
           if(strcmp(value, where->field->value) != 0) {
-            // exclude record and skip the rest of fields
-            // TODO: Fix the huge memory leak here!
             j = fieldCount;
             table->count -= 1;
-            table->tuples[i].fields[j].name = 0;
-            table->tuples[i].fields[j].value = 0;
+            if(filtered) {
+              filtered[filterIndex] = table->tuples[i];
+              filterIndex++;
+            }
             table->tuples[i].fields = 0;
             break;
           }

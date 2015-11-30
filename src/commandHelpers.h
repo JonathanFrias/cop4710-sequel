@@ -15,3 +15,5 @@ struct Tuple* createTuple(struct Field* fields);
 struct Tuple* createTupleList(struct Field* fields, int count);
 void destroyCommand(struct Command*);
 void insertTuple(struct Command* cmd);
+void writeHeaderLine(FILE* tableFile, struct Field* list);
+struct Command* createUpdateCommand(char* table, struct Field* fieldsToUpdate, struct Where* whereConstraints);

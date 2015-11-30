@@ -29,7 +29,7 @@ typedef enum {
 
 struct Field {
   char* name;
-  void* value;
+  char* value;
   FieldType fieldType;
 };
 
@@ -84,8 +84,9 @@ struct Command {
 
 struct Table {
   struct Tuple* tuples;
-  int count;
   char name[NAME_LIMIT];
+  int count;
+  int fieldCount;
 };
 
 struct Command* parseGrammer(char* sql);
@@ -93,7 +94,8 @@ struct Command* parseGrammer(char* sql);
 // Store/Retrieve
 bool store(struct Command* tuples);
 
-struct Table* retrieve(struct Command* tree); // Tuple list returned must be NULL terminated.
+// Tuple list returned must be NULL terminated.
+struct Table* retrieve(struct Command* command, struct Tuple* filtered);
 
 void setDatabase(char*);
 void createDatabase(struct Command* createCommand);
@@ -103,3 +105,4 @@ void computePadding(char*, char*, int);
 int getRecordCount(FILE* file);
 int getFieldCount(char* buffer, int size);
 bool whereCompare(struct Where* compare);
+void update(struct Command* command);
