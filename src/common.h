@@ -74,7 +74,7 @@ struct Command {
     wUPDATE,
     DELETE
   } commandType;
-  char* table; // name of table
+  char* table; // name of table (can be database)
   struct Field* fields;
   struct Where* whereConstraints;
 };
@@ -94,6 +94,8 @@ struct Table* retrieve(struct Command* tree); // Tuple list returned must be NUL
 
 void setDatabase(char*);
 void createDatabase(struct Command* createCommand);
+void dropDatabase(struct Command * removeCommand);
+void dropTable(struct Command * removeTableCommand);
 void createTable(struct Command* Command);
 void setDatabase(char*);
 void computePadding(char*, char*, int);

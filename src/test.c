@@ -6,6 +6,8 @@ void testStore(void);
 void testParseGrammer(void);
 void testCreateTable(void);
 void testRetrieve(void);
+void testDropDB();
+void testDropTable();
 
 // The following method stubs are not implemented!
 // When they are implemented, you can remove them
@@ -33,6 +35,12 @@ int main(void) {
 
   printf("\n===============testStore\n");
   testStore();
+
+  printf("\n================testDropDB\n");
+  testDropDB();
+
+  printf("\n=================testDropTbl\n");
+  testDropTable();
 
   printf("\n===============testRetrieve\n");
   testRetrieve();
@@ -80,6 +88,23 @@ void testRetrieve(void) {
   assert(strcmp((char*) results->tuples[1].fields[3].value, "3") == 0 , "Problem with resultset");
   assert(results->tuples[1].fields[4].name == 0 , "Problem with resultset");
 
+}
+
+void testDropDB(void)
+{
+
+  struct Command* dropDBCommand = createDropDatabaseCommand("databases2");
+  dropDatabase(dropDBCommand);
+//cleanup
+  destroyCommand(dropDBCommand);
+}
+
+void testDropTable()
+{
+  struct Command* dropTblCommand = createDropTableCommand("test_drop");
+  dropTable(dropTblCommand);
+//cleanup
+  destroyCommand(dropTblCommand); 
 }
 
 void testCreateTable(void) {
