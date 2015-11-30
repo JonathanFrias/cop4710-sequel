@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -22,16 +24,23 @@
 // Defines what database we're currently working on
 char* currentDatabase;
 
-typedef enum {
-  INTEGER_t='I',
-  DATE_t='D',
-  TEXT_t='T',
-} FieldType;
+enum field_t {
+  INTEGER_t = 'I', // Integer [(max_left)]
+  NUMBER_t = 'N', // Number [(max_left[,max_right])]
+  DATE_t = 'D', // Date mm/dd/yyyy
+  TEXT_t = 'T' // Character (max_left)
+};
+
+struct FieldType {
+  enum field_t ft;
+  int max_left; // max allowed characters (left of decimal if number)
+  int max_right; // max allowed characters to the right of decimal (only for number)
+}; 
 
 struct Field {
-  char* name;
-  void* value;
-  FieldType fieldType;
+  char name[30];
+  char value[120];
+  struct FieldType* field_type;
 };
 
 struct Tuple {
@@ -40,16 +49,19 @@ struct Tuple {
   int updatedAt;
 };
 
-typedef enum {
+enum whereCompare {
   LESS_THAN,
-  GREATHER_THAN,
-  // ...
-} whereCompare;
+  LESS_THAN_EQUALS,
+  GREATER_THAN,
+  GREATER_THAN_EQUALS,
+  EQUALS, 
+  NOT_EQUALS,
+};
 
 struct Where {
-  struct Field* field;
-  void* target;
-  whereCompare compareType;
+  char field[30];
+  char target[140];
+  enum whereCompare compareType;
 };
 
 /*
@@ -73,8 +85,8 @@ struct Command {
     UPDATE_t,
     DELETE_t
   } commandType;
-  char* table; // name of table
-  struct Field* fields;
+  char table[23]; // name of table
+  struct Field* fields[50];
   struct Where* whereConstraints;
 };
 

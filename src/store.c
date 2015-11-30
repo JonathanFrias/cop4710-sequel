@@ -1,5 +1,6 @@
 #include "common.h"
 #include <sys/stat.h>
+#include "/home/nickjones67/Documents/cop4710-sequel/src/commandHelpers.h"
 
 /*
  * This function creates a folder.
@@ -55,10 +56,10 @@ void createTable(struct Command* command) {
   char headerLine[HEADER_SIZE];
   char tmpLine[HEADER_SIZE];
 
-  while((*(command->fields+i)).name != NULL) {
+  while((*(command->fields+i))->name != NULL) {
     char name[NAME_LIMIT] = "";
-    char type = command->fields[i].fieldType;
-    snprintf(name, sizeof(name), "%s", command->fields[i].name);
+    char type = command->fields[i]->field_type->ft;
+    snprintf(name, sizeof(name), "%s", command->fields[i]->name);
     snprintf(tmpLine, sizeof(headerLine), "%s", headerLine);
     snprintf(headerLine, sizeof(headerLine), "%s|%s[%c]", tmpLine, name, type);
     i++;

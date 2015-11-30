@@ -5,6 +5,7 @@
 struct Command* cmd;
 int main(void)     
 {
+	cmd = malloc(sizeof(struct Command));
 	int i = 0;    
 	srand(1/2); 
 	char * sqlLine =        
