@@ -97,6 +97,22 @@ struct Command* createCreateDatabaseCommand(char* databaseName) {
   cmd->table = databaseName;
   return cmd;
 }
+//sets command struct for type and tablename
+struct Command* createDropTableCommand(char* tableName){
+  struct Command* cmd = malloc(COMMAND_SIZE);
+  cmd->commandType = DROP_TABLE;
+  cmd->table = tableName;
+  return cmd;
+}
+
+//sets command struct for database name to be removed from "out" (using command->table as database name)
+struct Command* createDropDatabaseCommand(char* databaseName)
+{
+  struct Command* cmd = malloc(COMMAND_SIZE);
+  cmd->commandType = DROP_DATABASE;
+  cmd->table = databaseName;
+  return cmd;
+}
 
 struct Command* createCreateTableCommand(char* table,
     struct Field* fields) {

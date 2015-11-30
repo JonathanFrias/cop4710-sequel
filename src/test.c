@@ -6,6 +6,8 @@ void testStore(void);
 void testParseGrammer(void);
 void testCreateTable(void);
 void testRetrieve(void);
+void testDropDB();
+void testDropTable();
 void testWhere(struct Table* table, struct Command* cmd);
 void testWhereCompare();
 
@@ -41,6 +43,12 @@ int main(void) {
   printf("\n===============testRetrieve\n");
   testRetrieve();
 
+  printf("\n=================testDropTbl\n");
+  testDropTable();
+  
+  printf("\n=================testDropDB\n");
+  testDropDB();
+
   printf("\n===============testParseGrammer\n");
   testParseGrammer();
   return 0;
@@ -74,6 +82,27 @@ void testRetrieve(void) {
   assert(strcmp((char*) results->tuples[0].fields[3].value, "3") == 0 , "Problem with resultset");
   assert(results->tuples[0].fields[4].name == 0 , "Problem with resultset");
 
+}
+
+void testDropDB(void)
+{
+  system("mkdir -p out/databases/test_drop");
+  struct Command* dropDBCommand = createDropDatabaseCommand("test_drop");
+  dropDatabase(dropDBCommand);
+//cleanup
+  destroyCommand(dropDBCommand);
+}
+//drop table needs a pathname from the tabe dir in 
+//databases to the table contained within.
+void testDropTable()
+{
+  currentDatabase = "test_drop";
+  system("mkdir -p out/databases/test_drop");
+  system("touch out/databases/test_drop/data");
+  struct Command* dropTblCommand = createDropTableCommand("data");
+  dropTable(dropTblCommand);
+//cleanup
+  destroyCommand(dropTblCommand); 
 }
 
 void testCreateTable(void) {

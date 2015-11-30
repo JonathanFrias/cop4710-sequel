@@ -52,8 +52,8 @@ void createTable(struct Command* command) {
 
   int i = 0;
 
-  char headerLine[HEADER_SIZE];
-  char tmpLine[HEADER_SIZE];
+  char headerLine[HEADER_SIZE] = "";
+  char tmpLine[HEADER_SIZE] = "";
 
   while((*(command->fields+i)).name != NULL) {
     char name[NAME_LIMIT] = "";
