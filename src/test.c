@@ -2,8 +2,6 @@
 #include "commandHelpers.h"
 
 // Test functions!
-struct Table* createExampleTable(int count);
-bool destroyExampleTable(struct Table*);
 void testStore(void);
 void testParseGrammer(void);
 void testCreateTable(void);
@@ -138,6 +136,7 @@ void testStore(void) {
       fields);
   createTable(createTableCmd);
 
+
   // test
   struct Command* insertCmd = createInsertCommand("table", fields);
   insertTuple(insertCmd);
@@ -148,7 +147,6 @@ void testStore(void) {
   destroyCommand(createDatabaseCommand);
   destroyCommand(createTableCmd);
 }
-
 /*
  *  This example represents the a sample of how
  *  the contents of a table should be represented.
@@ -185,7 +183,6 @@ struct Table* createExampleTable(int count) {
   return table;
 }
 
-
 void testWhereCompare() {
   // Date not implemented yet!
   // struct Field* dateField = createField("name", "1/1/1990", DATE);
@@ -214,3 +211,4 @@ void testWhereCompare() {
   //assert(!whereCompare(where4), "should be not eq!");
   //assert(whereCompare(where5), "should be eq!");
 }
+
