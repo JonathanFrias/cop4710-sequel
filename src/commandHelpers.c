@@ -41,21 +41,26 @@ struct Field* createField(char* name, char* value, whereType type) {
   return field;
 }
 
-struct Field* createFieldList(char* names, char* values, FieldType types[FIELD_SIZE][1], int count) {
+/*
+struct Field** createFieldList(char* names, char* values, FieldType types[FIELD_SIZE][1], int count) {
   // Must use CALLOC instead of MALLOC
   // because field list should be NULL TERMINATED!
-  struct Field* fieldList = calloc(count+1, FIELD_SIZE);
+  
+  for (int i=0; i<50; i++) 
+    struct Field* fieldList[i] = calloc(count+1, FIELD_SIZE);
   for(int i = 0; i < count; i++) {
-    (fieldList+i)->name = (names+(i*NAME_LIMIT));
+    fieldList[i]->name = names;
 
     if(values) {
-      (fieldList+i)->value = (values+(i*VALUE_LIMIT));
+      fieldList[i]->value = values;
     }
-    (fieldList+i)->fieldType = types[i][0];
+    fieldList[i]->fieldType = types[i][0];
   }
 
   return fieldList;
 }
+*/
+
 
 struct Where* createWhere(struct Field* field, whereType compareType) {
   struct Where* whereCondition = calloc(2, sizeof(struct Where));
@@ -203,7 +208,7 @@ void insertTuple(struct Command* cmd) {
   printf("opened file\n");
 
   int i = 0;
-  while(cmd->fields[i][0].name != NULL) {
+  while(cmd->fields[i] != NULL && cmd->fields[i][0].name != NULL) {
     fputs((char*) cmd->fields[i]->value, file);
     if(cmd->fields[i+1] != NULL) {
       fputs("|", file);

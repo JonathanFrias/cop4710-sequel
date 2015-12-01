@@ -46,10 +46,14 @@ int main(void) {
 
 void testRetrieve(void) {
   // This depends on testStore being run. because reasons!
+  char names[FIELD_SIZE][NAME_LIMIT] = { "name1", "name2", "name3", "name4", };
 
+  char values[FIELD_SIZE][VALUE_LIMIT] = { "1", "value2", "1/1/2015", "3", };
+ 
   char names[FIELD_SIZE][NAME_LIMIT] = { "name4", "name2", "name3", "name1", };
   FieldType types[FIELD_SIZE][1] = { INTEGER_t, TEXT_t, DATE_t, INTEGER_t, };
-  struct Field* projection = createFieldList(names, NULL, types, 4);
+  for (int i=0; i<4; i++)
+    struct Field* projection[i] = createField(names[i], NULL, types[i]);
   struct Command* selectCmd = createSelectCommand("table", projection, NULL);
 
   struct Table* results = retrieve(selectCmd);

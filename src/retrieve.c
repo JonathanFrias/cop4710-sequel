@@ -12,6 +12,7 @@ struct Table* retrieve(struct Command* command) {
   // open file and get record count
   // each line is a new record
   FILE* file = fopen(tablePath, "r");
+  assert(file, "Table does not exist!");
   int recordCount = getRecordCount(file);
 
   char buffer[FIELD_LIMIT*VALUE_LIMIT];
@@ -22,7 +23,7 @@ struct Table* retrieve(struct Command* command) {
   buffer[strlen(buffer)-1] = '\0';
   char* fieldName = strtok(buffer, "|");
 
-  struct Field* recordFields = malloc(sizeof(struct Field)*fieldCount*recordCount*2+recordCount);
+  struct Field* recordFields = calloc(fieldCount*recordCount*2+recordCount, sizeof(struct Field));
 
   struct Tuple* tuples = calloc(recordCount+1, sizeof(struct Tuple));
 
