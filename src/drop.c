@@ -10,13 +10,8 @@ void printTable(struct Table* table)
 
 
   printf("%10s\n--------------------\n", table->name); 
-  i = 0;
-  while(table->tuples[i].fields != NULL)
-  {
-    for(int j = 0; table->tuples[i].fields[j].name != NULL; j++) {
-    printf("%10s", table->tuples[i].fields[j].name);
-}
-    i++; 
+  for(int j = 0; table->tuples[0].fields[j].name != NULL; j++) {
+    printf("%10s", table->tuples[0].fields[j].name);
   }
 
   printf("\n");

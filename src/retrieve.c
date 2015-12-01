@@ -67,10 +67,10 @@ struct Table* retrieve(struct Command* command) {
   table->tuples = tuples;
   table->count = recordCount;
   snprintf(table->name, sizeof(table->name), "%s", command->table);
-  fclose(file);
   applyWhere(table, command, fieldCount);
   return table;
 }
+
 
 int getFieldCount(char* buffer, int size) {
   int fieldCount = 0;

@@ -15,35 +15,35 @@ clean:
 	rm $(COMPILE_DIR)/sql.tab.h $(COMPILE_DIR)/sql.tab.c $(COMPILE_DIR)/lexer.h $(COMPILE_DIR)/*.o  $(COMPILE_DIR)/lex.yy.c $(COMPILE_DIR)/wSQLx
 
 
-wSQLx: lex.yy.o sql.tab.o sql.o commandHelpers.o assert.o store.o retrieve.o drop.o
-	cc -o $(COMPILE_DIR)/wSQLx -g -std=gnu99 $(OUT_FILES) 
+all: lex.yy.o sql.tab.o sql.o commandHelpers.o assert.o store.o retrieve.o drop.o
+	cc -g  -std=gnu99 $(OUT_FILES) -o $(COMPILE_DIR)/wSQLx
 
 sql.o: sql.c 
-	cc -c sql.c -o $(COMPILE_DIR)/sql.o
+	cc -g -c sql.c -o $(COMPILE_DIR)/sql.o
 
 sql.tab.o: sql.tab.c
-	cc -c $(COMPILE_DIR)/sql.tab.c -o $(COMPILE_DIR)/sql.tab.o 
+	cc -g -c $(COMPILE_DIR)/sql.tab.c -o $(COMPILE_DIR)/sql.tab.o 
 
 sql.tab.c: sql.y
 	bison -d sql.y -b $(COMPILE_DIR)/sql
 
 lex.yy.o: lex.yy.c 
-	cc -c $(COMPILE_DIR)/lex.yy.c -o $(COMPILE_DIR)/lex.yy.o
+	cc -g -c $(COMPILE_DIR)/lex.yy.c -o $(COMPILE_DIR)/lex.yy.o
 
 lex.yy.c: sql.l sql.tab.c
 	flex --header-file=$(COMPILE_DIR)/lexer.h --outfile=out/lex.yy.c  sql.l
 
 commandHelpers.o: $(SRC_DIR)/commandHelpers.c
-	cc -c $(SRC_DIR)/commandHelpers.c -o $(COMPILE_DIR)/commandHelpers.o -std=gnu99 
+	cc -g -c $(SRC_DIR)/commandHelpers.c -o $(COMPILE_DIR)/commandHelpers.o -std=gnu99 
 
 assert.o: $(SRC_DIR)/assert.c
-	cc -c $(SRC_DIR)/assert.c -o $(COMPILE_DIR)/assert.o -std=gnu99
+	cc -g -c $(SRC_DIR)/assert.c -o $(COMPILE_DIR)/assert.o -std=gnu99
 
 store.o: $(SRC_DIR)/store.c
-	cc -c $(SRC_DIR)/store.c -o $(COMPILE_DIR)/store.o -std=gnu99
+	cc -g -c $(SRC_DIR)/store.c -o $(COMPILE_DIR)/store.o -std=gnu99
 
 retrieve.o: $(SRC_DIR)/retrieve.c
-	cc -c $(SRC_DIR)/retrieve.c -o $(COMPILE_DIR)/retrieve.o -std=gnu99
+	cc -g -c $(SRC_DIR)/retrieve.c -o $(COMPILE_DIR)/retrieve.o -std=gnu99
 
 drop.o: $(SRC_DIR)/drop.c 
-	cc -c $(SRC_DIR)/drop.c -o $(COMPILE_DIR)/drop.o -std=gnu99
+	cc -g -c $(SRC_DIR)/drop.c -o $(COMPILE_DIR)/drop.o -std=gnu99

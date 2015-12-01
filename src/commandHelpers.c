@@ -203,7 +203,7 @@ void insertTuple(struct Command* cmd) {
   printf("opened file\n");
 
   int i = 0;
-  while(cmd->fields[i] != NULL) {
+  while(cmd->fields[i][0].name != NULL) {
     fputs((char*) cmd->fields[i]->value, file);
     if(cmd->fields[i+1] != NULL) {
       fputs("|", file);
