@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -5,6 +7,7 @@
 #include <unistd.h>
 #include <time.h>
 #include "assert.h"
+#include "../out/lexer.h"
 
 #define COMMAND_SIZE sizeof(struct Command)
 #define WHERE_SIZE sizeof(struct Where)
@@ -22,9 +25,9 @@
 char* currentDatabase;
 
 typedef enum {
-  INTEGER='I',
-  DATE='D',
-  TEXT='T',
+  INTEGER_t='I',
+  DATE_t='D',
+  TEXT_t='T',
 } FieldType;
 
 struct Field {
@@ -42,8 +45,8 @@ struct Tuple {
 typedef enum {
   LESS_THAN,
   LESS_THAN_OR_EQ,
-  GREATHER_THAN,
-  GREATHER_THAN_OR_EQ,
+  GREATER_THAN,
+  GREATER_THAN_OR_EQ,
   EQUAL,
   NOT_EQUAL,
 } whereType;
@@ -63,19 +66,17 @@ struct Where {
  */
 struct Command {
   enum {
-    CREATE_DATABASE,
-    CREATE_TABLE,
-    DROP_DATABASE,
-    DROP_TABLE,
-    COMMIT,
-    SAVE,
-    LOAD_DATABASE,
-    SELECT,
-    wSELECT,
-    INSERT,
-    UPDATE,
-    wUPDATE,
-    DELETE
+    CREATE_DATABASE_t,
+    CREATE_TABLE_t,
+    DROP_DATABASE_t,
+    DROP_TABLE_t,
+    SAVE_t,
+    LOAD_DATABASE_t,
+    SELECT_t,
+    wSELECT_t,
+    INSERT_t,
+    UPDATE_t,
+    DELETE_t,
   } commandType;
   char* table; // name of table
   struct Field* fields;
@@ -106,3 +107,5 @@ int getRecordCount(FILE* file);
 int getFieldCount(char* buffer, int size);
 bool whereCompare(struct Where* compare);
 void update(struct Command* command);
+struct Command* createDropDatabaseCommand(char* databaseName);
+struct Command* createDropTableCommand(char*);
