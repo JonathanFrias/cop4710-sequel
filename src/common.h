@@ -53,7 +53,7 @@ typedef enum {
 
 struct Where {
   struct Field* field;
-  void* target;
+  char* target;
   whereType compareType;
 };
 

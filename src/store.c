@@ -103,7 +103,10 @@ void update(struct Command* command) {
   for(int i = 0; i < entireTable->count; i++) {
     for(int j = 0; j < entireTable->fieldCount; j++) {
       for(int k = 0; command->fields[k].value != NULL; k++) {
-        if(strcmp(entireTable->tuples[i].fields[j].name, command->fields[k].name) == 0) {
+
+        char* name = entireTable->tuples[i].fields[j].name;
+        char* updatedName = command->fields[k].name;
+        if(name && updatedName && strcmp(name, updatedName) == 0) {
           snprintf(entireTable->tuples[i].fields[j].value,
               VALUE_LIMIT, "%s", (char*)command->fields[k].value);
         }

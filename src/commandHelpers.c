@@ -118,7 +118,6 @@ struct Command* createSelectCommand(char* table, struct Field* projection, struc
   if(projection) {
     cmd->fields = projection;
   } else {
-    cmd->fields = addField("selectName", "selectVal", TEXT_t, projection);
   }
   cmd->whereConstraints = whereConstraints;
 

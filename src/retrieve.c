@@ -203,10 +203,9 @@ void applyWhere(struct Table* table, struct Command* cmd, struct Tuple* filtered
       struct Where* where = NULL;
       int k = 0;
       while((where = &cmd->whereConstraints[k])->field != NULL) {
-
         char* name = table->tuples[i].fields[j].name;
         char* value = table->tuples[i].fields[j].value;
-        if(strcmp(name, where->field->name) == 0) {
+        if(name && value && strcmp(name, where->field->name) == 0) {
           if(strcmp(value, where->field->value) != 0) {
             j = fieldCount;
             table->count -= 1;
