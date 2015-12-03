@@ -1,10 +1,30 @@
 #include "common.h"
+#include "../out/sql.tab.h"
 
-int main(void)
+
+
+struct Command* cmd;
+struct Tuple* this_tuple;
+struct Where* this_where;
+struct Field* this_field;
+struct Field* this_field_array[50];
+
+
+
+int main(void)     
 {
-	int i = 0;
-	srand(1/2);
-	char * sqlLine =   
+	int i;
+
+	cmd = malloc(sizeof(struct Command));
+	this_tuple = malloc(sizeof(struct Tuple));
+	this_where = malloc(sizeof(struct Where));
+	this_field = malloc(sizeof(struct Field));
+	for (i=0; i<50; i++) {
+		this_field_array[i] = malloc(sizeof(struct Field));
+	}
+    
+	srand(1/2); 
+	char * sqlLine =        
 		("                                                                      \n"
 		 "::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 		 "::******************************************************************::\n"
@@ -21,23 +41,38 @@ int main(void)
 		 "::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 		 "                                                                      \n");
 
-	for (i = 0; i < strlen(sqlLine); i++)
+	for (i = 0; i < strlen(sqlLine); i++)   
 	{
-		printf("%c", sqlLine[i]);
-		usleep(10000);
+		printf("%c", sqlLine[i]); 
+		// usleep(2000);
 	}
 
-	printf("%45s\n", "Welcome to wSQLx!");
-
-
-	char * sqlString = "wSQLx: ";
-	char * input = {0};
-	do
+	printf("Welcome to wSQLx! Enter a command or\n");
+	printf("Enter 'exit' to quit wSQLx or 'help' for more information\n\n");
+	
+	char* current_database = "NULL";
+	extern int yyparse(void);
+	char user_input[300];
+	char temp[300];
+	 
+	do 
 	{
-		printf("%sPlese input command.", sqlString);
-		scanf("%s", input);
+		printf("wSQLx: ");
+		scanf("%[^\n]%*c", user_input);
+		
+		
+		user_input[strlen(user_input)+1] = '\0';
+		strcpy(temp, user_input);
+		YY_BUFFER_STATE string_buffer = yy_scan_string(temp);
+		yy_switch_to_buffer(string_buffer);
+		yyparse();
+		yy_delete_buffer(string_buffer);
+		
 
 
-	}while (input != "exit");    //this infinitely loops
+	} while (strcmp(user_input, "exit") != 0);    //this infinitely loops
+	
+	
+	return 0;
+	
 }
-

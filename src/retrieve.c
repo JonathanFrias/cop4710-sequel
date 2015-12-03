@@ -112,7 +112,7 @@ bool whereCompare(struct Where* compare) {
   char* fieldValue = (char*) compare->target;
   char* compareValue = (char*) compare->field->value;
 
-  if(compare->field->fieldType == INTEGER) {
+  if(compare->field->fieldType == INTEGER_t) {
     if(compare->compareType == EQUAL) {
       return intEq(fieldValue, compareValue);
     }
@@ -125,11 +125,11 @@ bool whereCompare(struct Where* compare) {
       return intLt(fieldValue, compareValue) || intEq(fieldValue, compareValue);
     }
 
-    if(compare->compareType == GREATHER_THAN) {
+    if(compare->compareType == GREATER_THAN) {
       return intGt(fieldValue, compareValue);
     }
 
-    if(compare->compareType == GREATHER_THAN_OR_EQ) {
+    if(compare->compareType == GREATER_THAN_OR_EQ) {
       return intGt(fieldValue, compareValue) || intEq(fieldValue, compareValue);
     }
 
@@ -138,7 +138,7 @@ bool whereCompare(struct Where* compare) {
     }
   }
 
-  if(compare->field->fieldType == TEXT) {
+  if(compare->field->fieldType == TEXT_t) {
     if(compare->compareType == EQUAL) {
       return textEq(fieldValue, compareValue);
     }
@@ -151,11 +151,11 @@ bool whereCompare(struct Where* compare) {
       return textLt(fieldValue, compareValue) || textEq(fieldValue, compareValue);
     }
 
-    if(compare->compareType == GREATHER_THAN) {
+    if(compare->compareType == GREATER_THAN) {
       return textGt(fieldValue, compareValue);
     }
 
-    if(compare->compareType == GREATHER_THAN_OR_EQ) {
+    if(compare->compareType == GREATER_THAN_OR_EQ) {
       return textGt(fieldValue, compareValue) || textEq(fieldValue, compareValue);
     }
 
@@ -203,10 +203,9 @@ void applyWhere(struct Table* table, struct Command* cmd, struct Tuple* filtered
       struct Where* where = NULL;
       int k = 0;
       while((where = &cmd->whereConstraints[k])->field != NULL) {
-
         char* name = table->tuples[i].fields[j].name;
         char* value = table->tuples[i].fields[j].value;
-        if(strcmp(name, where->field->name) == 0) {
+        if(name && value && strcmp(name, where->field->name) == 0) {
           if(strcmp(value, where->field->value) != 0) {
             j = fieldCount;
             table->count -= 1;

@@ -1,25 +1,79 @@
 #include "common.h"
 
-struct Field* createField(char* name, char* value, whereType type) {
 
-  // MUST USE CALLOC, not MALLOC!
-  struct Field* field = (struct Field*) calloc(2, sizeof(struct Field));
-
-  if(name) {
-    field->name = name;
-  } else {
-    field->name = "field_name";
-  }
-
-  if(value) {
-    field->value = value;
-  } else {
-    field->value = "field_value";
-  }
-
-  field->fieldType = type;
-  return field;
+struct Command* createDropTableCommand(char* tableName){
+  struct Command* cmd = malloc(COMMAND_SIZE);
+  cmd->commandType = DROP_TABLE_t;
+  cmd->table = tableName;
+  return cmd;
 }
+
+//sets command struct for database name to be removed from "out" (using command->table as database name)
+struct Command* createDropDatabaseCommand(char* databaseName)
+{
+  struct Command* cmd = malloc(COMMAND_SIZE);
+  cmd->commandType = DROP_DATABASE_t;
+  cmd->table = databaseName;
+  return cmd;
+}
+
+
+
+
+struct Field* addField(char* name, char* value, FieldType type, 
+  			struct Field* old_fields) {
+   
+  //struct Field* field = (struct Field*) calloc(2, sizeof(struct Field));
+        int i;
+
+        for(i=0; (old_fields+i)->name != NULL; i++)
+                ;
+
+        struct Field* new_fields = (struct Field*)calloc(i+2, FIELD_SIZE);
+
+        for(i=0; (old_fields+i)->name != NULL; i++) {
+                (new_fields+i)->name = (old_fields+i)->name;
+                (new_fields+i)->value = (old_fields+i)->value;
+                (new_fields+i)->fieldType = (old_fields+i)->fieldType;
+        }
+
+        (new_fields+i)->name = name;
+        (new_fields+i)->value = value;
+        (new_fields+i)->fieldType = type;
+
+        /*
+        (new_fields+i+1)->name = NULL;
+        (new_fields+i+1)->value = NULL;
+        (new_fields+i+1)->fieldType = 'D';
+        */
+
+        /*
+        if (name) {
+                field->name = name;
+        } else {
+                field->name = "field_name";
+        }
+
+        if (value) {
+                field->value = value;
+        } else {
+                field->value = "field_value";
+        }
+        field->fieldType = type;
+	*/
+
+        /*
+        // free memory
+        for(i=0; (old_fields+i)->name != NULL; i++) {
+                free((old_fields+i)->name);
+                free((old_fields+i)->value);
+        } 
+        free(old_fields);
+        */
+
+        return new_fields;
+
+} // end addField()
 
 struct Field* createFieldList(char* names, char* values, FieldType types[FIELD_SIZE][1], int count) {
   // Must use CALLOC instead of MALLOC
@@ -43,7 +97,7 @@ struct Where* createWhere(struct Field* field, whereType compareType) {
   if(field) {
     whereCondition->field = field;
   } else {
-    whereCondition->field = createField("WhereCondname", "WhereCondValue", TEXT);
+    whereCondition->field = addField("WhereCondname", "WhereCondValue", TEXT_t, field);
   }
   whereCondition->target = field->value;
   whereCondition->compareType = compareType;
@@ -53,7 +107,7 @@ struct Where* createWhere(struct Field* field, whereType compareType) {
 struct Command* createSelectCommand(char* table, struct Field* projection, struct Where* whereConstraints) {
   struct Command* cmd = malloc(COMMAND_SIZE);
 
-  cmd->commandType = SELECT;
+  cmd->commandType = SELECT_t;
 
   if(table) {
     cmd->table = table;
@@ -64,7 +118,6 @@ struct Command* createSelectCommand(char* table, struct Field* projection, struc
   if(projection) {
     cmd->fields = projection;
   } else {
-    cmd->fields = createField("selectName", "selectVal", TEXT);
   }
   cmd->whereConstraints = whereConstraints;
 
@@ -75,7 +128,7 @@ struct Command* createUpdateCommand(char* table,
     struct Field* fieldsToUpdate,
     struct Where* whereConstraints) {
   struct Command* cmd = malloc(COMMAND_SIZE);
-  cmd->commandType = UPDATE;
+  cmd->commandType = UPDATE_t;
 
   assert(table, "table is required");
 
@@ -89,7 +142,7 @@ struct Command* createWSelectCommand(char* table, struct Field* projection, stru
 
   struct Command* cmd = malloc(COMMAND_SIZE);
 
-  cmd->commandType = wSELECT;
+  cmd->commandType = wSELECT_t;
 
   if(table) {
     cmd->table = table;
@@ -100,14 +153,14 @@ struct Command* createWSelectCommand(char* table, struct Field* projection, stru
   if(projection) {
     cmd->fields = projection;
   } else {
-    cmd->fields = createField("selectName", "selectVal", TEXT);
+    cmd->fields = addField("selectName", "selectVal", TEXT_t, projection);
   }
   return cmd;
 }
 
 struct Command* createCreateDatabaseCommand(char* databaseName) {
   struct Command* cmd = malloc(COMMAND_SIZE);
-  cmd->commandType = CREATE_DATABASE;
+  cmd->commandType = CREATE_DATABASE_t;
   cmd->table = databaseName;
   return cmd;
 }
@@ -115,7 +168,7 @@ struct Command* createCreateDatabaseCommand(char* databaseName) {
 struct Command* createCreateTableCommand(char* table,
     struct Field* fields) {
   struct Command* cmd = malloc(COMMAND_SIZE);
-  cmd->commandType = CREATE_TABLE;
+  cmd->commandType = CREATE_TABLE_t;
   cmd->fields = fields;
   cmd->table = table;
   return cmd;
@@ -127,7 +180,7 @@ struct Tuple* createTuple(struct Field* fields) {
   if(fields) {
     result->fields = fields;
   } else {
-    result->fields = createField("createTuple", "createValue1", TEXT);
+    result->fields = addField("createTuple", "createValue1", TEXT_t, fields);
   }
 
   return result;
@@ -140,7 +193,7 @@ struct Tuple* createTupleList(struct Field* fields, int count) {
     if(fields) {
       results[i].fields = fields;
     } else {
-      results[i].fields = createField("createTuple", "createValue1", TEXT);
+      results[i].fields = addField("createTuple", "createValue1", TEXT_t, fields);
     }
   }
 
@@ -149,7 +202,7 @@ struct Tuple* createTupleList(struct Field* fields, int count) {
 
 struct Command* createInsertCommand(char* table, struct Field* fields) {
   struct Command* command = malloc(sizeof(struct Command));
-  command->commandType = INSERT;
+  command->commandType = INSERT_t;
   command->fields = fields;
   command->table = table;
 
@@ -161,11 +214,11 @@ void destroyCommand(struct Command* cmd) {
   assert(cmd, "Cannot destroy invalid cmd");
 
   switch(cmd->commandType) {
-    case CREATE_TABLE:
+    case CREATE_TABLE_t:
       if(cmd->fields) {
         free(cmd->fields);
       }
-    case CREATE_DATABASE:
+    case CREATE_DATABASE_t:
     default:
       free(cmd);
   }
@@ -173,7 +226,7 @@ void destroyCommand(struct Command* cmd) {
 }
 
 void insertTuple(struct Command* cmd) {
-  assert(cmd->commandType == INSERT, "Incompatible command type to function insert");
+  assert(cmd->commandType == INSERT_t, "Incompatible command type to function insert");
   assert(currentDatabase, "CurrentDatabase must be set!");
   assert(cmd->table, "Table must be provied!");
   char tablePath[PATH_SIZE];

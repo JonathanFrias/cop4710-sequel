@@ -9,7 +9,7 @@
  */
 void createDatabase(struct Command* createCommand) {
 
-  assert(createCommand->commandType == CREATE_DATABASE,
+  assert(createCommand->commandType == CREATE_DATABASE_t,
       "Incompatible Command commandType to function createDatabase");
   mkdir(DATABASE_DIR, 0700);
 
@@ -41,7 +41,7 @@ void setDatabase(char* database) {
 void createTable(struct Command* command) {
 
   // validations!
-  assert(command->commandType == CREATE_TABLE,
+  assert(command->commandType == CREATE_TABLE_t,
     "Expectd command commandType to be CREATE_TABLE");
   assert(command->fields, "Fields must be provided!");
   assert(command->table, "Table name must be provided");
@@ -103,7 +103,10 @@ void update(struct Command* command) {
   for(int i = 0; i < entireTable->count; i++) {
     for(int j = 0; j < entireTable->fieldCount; j++) {
       for(int k = 0; command->fields[k].value != NULL; k++) {
-        if(strcmp(entireTable->tuples[i].fields[j].name, command->fields[k].name) == 0) {
+
+        char* name = entireTable->tuples[i].fields[j].name;
+        char* updatedName = command->fields[k].name;
+        if(name && updatedName && strcmp(name, updatedName) == 0) {
           snprintf(entireTable->tuples[i].fields[j].value,
               VALUE_LIMIT, "%s", (char*)command->fields[k].value);
         }
@@ -114,7 +117,7 @@ void update(struct Command* command) {
     free(tmpCommand);
   }
 
-  if(command->commandType != DELETE) {
+  if(command->commandType != DELETE_t) {
     for(int i = 0; filtered[i].fields != NULL; i++) {
       insertTuple(createInsertCommand(command->table, filtered[i].fields));
     }
@@ -127,6 +130,6 @@ void update(struct Command* command) {
 
 
 void  delete(struct Command* command) {
-  assert(command->commandType == DELETE, "Incompatible command type!");
+  assert(command->commandType == DELETE_t, "Incompatible command type!");
   update(command);
 }
