@@ -1,4 +1,4 @@
-#COP4710 Sequel Engine (Seriously? WTF!)
+#COP4710 Sequel Engine
 
 This is a code repository to house our project. This project is totally
 **open source**! (You should get over that because you want your name on
